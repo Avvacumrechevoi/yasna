@@ -3,8 +3,8 @@ import { Header } from "@/components/layout/Header";
 import { DirectionsSection } from "@/components/sections/DirectionsSection";
 import { EventsSection } from "@/components/sections/events";
 import { HeroSection } from "@/components/sections/Hero";
+import { HowToParticipateSection } from "@/components/sections/HowToParticipate";
 import { JoinSection } from "@/components/sections/join";
-import { ParticipationSection } from "@/components/sections/participation";
 import { WhoIsThisForSection } from "@/components/sections/WhoIsThisFor";
 
 export default function Home() {
@@ -15,7 +15,7 @@ export default function Home() {
         <HeroSection />
         <WhoIsThisForSection />
         <DirectionsSection />
-        <ParticipationSection />
+        <HowToParticipateSection />
         <EventsSection />
         <JoinSection />
       </main>
