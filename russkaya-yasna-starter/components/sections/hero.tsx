@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 
 export function HeroSection() {
   return (
-    <section className="px-6 pb-12 pt-16 md:pt-24">
+    <section id="about" className="px-6 pb-12 pt-16 md:pt-24">
       <div className="mx-auto flex max-w-5xl flex-col items-center text-center">
         <span className="rounded-full bg-secondary-100 px-4 py-1 text-xs font-medium uppercase tracking-[0.2em] text-secondary-700">
           Образовательное сообщество

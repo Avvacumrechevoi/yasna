@@ -1,7 +1,10 @@
 import { Footer } from "@/components/layout/footer";
-import { Header } from "@/components/layout/header";
+import { Header } from "@/components/layout/Header";
+import { EventsSection } from "@/components/sections/events";
 import { FeaturesSection } from "@/components/sections/features";
 import { HeroSection } from "@/components/sections/hero";
+import { JoinSection } from "@/components/sections/join";
+import { ParticipationSection } from "@/components/sections/participation";
 
 export default function Home() {
   return (
@@ -10,6 +13,9 @@ export default function Home() {
       <main>
         <HeroSection />
         <FeaturesSection />
+        <ParticipationSection />
+        <EventsSection />
+        <JoinSection />
       </main>
       <Footer />
     </div>
