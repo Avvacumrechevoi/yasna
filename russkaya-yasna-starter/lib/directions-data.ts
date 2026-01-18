@@ -1,4 +1,3 @@
-import type { ReactNode } from "react";
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,
@@ -38,7 +37,7 @@ export type DirectionResource = {
   id: string;
   label: string;
   href: string;
-  icon?: ReactNode;
+  icon?: LucideIcon;
 };
 
 export type DirectionData = {
@@ -106,13 +105,13 @@ export const directionsData: DirectionData[] = [
         id: "neglinka-telegram",
         label: "Telegram",
         href: "https://t.me/neglinka78",
-        icon: <Send className="h-4 w-4" aria-hidden="true" />,
+        icon: Send,
       },
       {
         id: "neglinka-site",
         label: "Сайт",
         href: "https://example.com",
-        icon: <Globe className="h-4 w-4" aria-hidden="true" />,
+        icon: Globe,
       },
     ],
     filters: ["all", "moscow", "online"],

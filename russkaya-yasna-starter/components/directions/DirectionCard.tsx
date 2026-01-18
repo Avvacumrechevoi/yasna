@@ -3,6 +3,7 @@
 import * as React from "react";
 import type { ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 import {
   Calendar,
   CheckCircle2,
@@ -33,7 +34,7 @@ export type ResourceType = {
   id: string;
   label: string;
   href: string;
-  icon?: ReactNode;
+  icon?: LucideIcon;
 };
 
 export type DirectionCardProps = {
@@ -337,23 +338,28 @@ export function DirectionCard({
             <h3 className="text-lg font-semibold text-text">Ресурсы</h3>
             {resources.length ? (
               <div className="mt-4 flex flex-wrap gap-3 text-sm">
-                {resources.map((resource) => (
-                  <a
-                    key={resource.id}
-                    href={resource.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    onClick={(event) => event.stopPropagation()}
-                    className="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-primary-50 px-3 py-2 text-text/70 transition-colors hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
-                  >
-                    <span className="text-accent">
-                      {resource.icon ?? (
-                        <ExternalLink className="h-4 w-4" aria-hidden="true" />
-                      )}
-                    </span>
-                    <span>{resource.label}</span>
-                  </a>
-                ))}
+                {resources.map((resource) => {
+                  const ResourceIcon = resource.icon;
+                  return (
+                    <a
+                      key={resource.id}
+                      href={resource.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      onClick={(event) => event.stopPropagation()}
+                      className="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-primary-50 px-3 py-2 text-text/70 transition-colors hover:bg-primary-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                    >
+                      <span className="text-accent">
+                        {ResourceIcon ? (
+                          <ResourceIcon className="h-4 w-4" aria-hidden="true" />
+                        ) : (
+                          <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                        )}
+                      </span>
+                      <span>{resource.label}</span>
+                    </a>
+                  );
+                })}
               </div>
             ) : (
               <p className="mt-3 text-sm text-text/60">Ссылки появятся скоро.</p>
