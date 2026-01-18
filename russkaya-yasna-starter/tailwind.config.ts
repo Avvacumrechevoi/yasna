@@ -50,6 +50,7 @@ const config: Config = {
         },
         background: '#FAF9F6',
         foreground: '#1A1A1A',
+        border: '#E5E7EB',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
