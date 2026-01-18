@@ -14,15 +14,40 @@ const playfair = Playfair_Display({
   display: 'swap',
 });
 
+const siteName = "Русская Ясна";
+const siteDescription =
+  "Образовательное сообщество для изучения русского языка, истории и культуры. 8 направлений исследований, встречи, натурные уроки и курсы.";
+
 export const metadata: Metadata = {
-  title: "Русская Ясна — Русское учение о жизни",
-  description: "Образовательное сообщество для изучения русского языка, истории и культуры. 8 направлений исследований, встречи, натурные уроки, курсы. Присоединяйтесь!",
-  keywords: "русская культура, русский язык, история России, традиции, образование, ясна",
+  title: {
+    default: `${siteName} — русское учение о жизни`,
+    template: `%s — ${siteName}`,
+  },
+  description: siteDescription,
+  keywords: [
+    "русская культура",
+    "русский язык",
+    "история России",
+    "традиции",
+    "образование",
+    "ясна",
+  ],
+  authors: [{ name: siteName }],
   openGraph: {
-    title: "Русская Ясна — Русское учение о жизни",
-    description: "Образовательное сообщество для изучения русского языка, истории и культуры",
+    title: `${siteName} — русское учение о жизни`,
+    description: siteDescription,
     type: "website",
     locale: "ru_RU",
+    siteName,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${siteName} — русское учение о жизни`,
+    description: siteDescription,
+  },
+  robots: {
+    index: true,
+    follow: true,
   },
 };
 
@@ -33,7 +58,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru" className={`${inter.variable} ${playfair.variable}`}>
-      <body className={`${inter.className} antialiased bg-background text-foreground`}>
+      <body className={`${inter.className} antialiased bg-background text-text`}>
         {children}
       </body>
     </html>
