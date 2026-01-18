@@ -17,18 +17,17 @@ const participationSteps = [
 
 export function ParticipationSection() {
   return (
-    <section id="participation" className="px-6 pb-20">
+    <section id="how-it-works" className="px-6 pb-20">
       <div className="mx-auto max-w-6xl">
         <div className="mb-10 text-center">
           <p className="text-sm uppercase tracking-[0.2em] text-secondary-700">
-            Как участвовать
+            Как это работает
           </p>
           <h2 className="mt-3 text-3xl font-semibold text-primary md:text-4xl">
-            Начните путь вместе с Русской Ясной
+            Простые шаги для участия
           </h2>
           <p className="mt-3 text-text/70">
-            Мы помогаем подобрать формат участия и поддерживаем на каждом
-            этапе.
+            Мы помогаем подобрать формат и сопровождаем на всем пути.
           </p>
         </div>
 

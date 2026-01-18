@@ -35,7 +35,7 @@ type DirectionItem = {
 const navItems: NavItem[] = [
   { id: "about", label: "О проекте", href: "#about" },
   { id: "directions", label: "Направления", href: "#directions" },
-  { id: "participation", label: "Как участвовать", href: "#participation" },
+  { id: "how-it-works", label: "Как участвовать", href: "#how-it-works" },
   { id: "events", label: "Мероприятия", href: "#events" },
 ];
 
