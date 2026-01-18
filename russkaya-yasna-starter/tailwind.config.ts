@@ -49,7 +49,8 @@ const config: Config = {
           900: '#081434',
         },
         background: '#FAF9F6',
-        foreground: '#1A1A1A',
+        text: '#1A1A1A',
+        border: '#E3DED6',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
