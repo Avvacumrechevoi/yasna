@@ -36,6 +36,10 @@ export function HeroSection() {
   const shouldReduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
   const imageY = useTransform(scrollY, [0, 500], [0, shouldReduceMotion ? 0 : -40]);
+  const assetBase = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+  const assetPrefix =
+    assetBase && assetBase.startsWith("/") ? assetBase : assetBase ? `/${assetBase}` : "";
+  const heroImageSrc = `${assetPrefix}/images/hero-placeholder.svg`;
 
   const scrollToSection = React.useCallback(
     (sectionId: string) => {
@@ -201,7 +205,7 @@ export function HeroSection() {
         >
           <div className="relative aspect-[4/5] overflow-hidden rounded-[32px] border border-primary-100 bg-white/80 shadow-xl">
             <img
-              src="/images/hero-placeholder.svg"
+              src={heroImageSrc}
               alt="Абстрактная иллюстрация книг и старинных карт"
               className="h-full w-full object-cover"
             />
