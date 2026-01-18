@@ -49,6 +49,7 @@ const config: Config = {
           900: '#081434',
         },
         background: '#FAF9F6',
+        text: '#1A1A1A',
         foreground: '#1A1A1A',
       },
       fontFamily: {
