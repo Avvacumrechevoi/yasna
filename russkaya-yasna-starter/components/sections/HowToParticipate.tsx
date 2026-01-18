@@ -303,64 +303,81 @@ export function HowToParticipateSection() {
 
                 <AnimatePresence initial={false}>
                   {isExpanded ? (
-                    <motion.ol
+                    <motion.div
                       id={stepsId}
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
                       transition={{ duration: 0.3, ease: "easeOut" }}
-                      className="relative flex flex-col gap-4 overflow-hidden"
+                      className="overflow-hidden"
                     >
-                      {scenario.steps.map((step, index) => {
-                        const isLast = index === scenario.steps.length - 1;
-                        return (
-                          <motion.li
-                            key={step.id}
-                            variants={stepVariants}
-                            className="relative flex gap-4"
-                          >
-                            <div className="relative flex flex-col items-center">
-                              <span
-                                className="flex h-8 w-8 items-center justify-center rounded-full border border-primary-100 text-xs font-semibold"
-                                style={{ backgroundColor: `${scenario.accent}1A`, color: scenario.accent }}
-                              >
-                                {index + 1}
-                              </span>
-                              {!isLast ? (
-                                <motion.span
-                                  initial={shouldReduceMotion ? false : { scaleY: 0 }}
-                                  animate={{ scaleY: 1 }}
-                                  transition={{ duration: 0.4, ease: "easeOut" }}
-                                  className="mt-2 h-full w-px origin-top bg-primary-100"
-                                  aria-hidden="true"
-                                />
-                              ) : null}
-                            </div>
-                            <div
-                              className={cn(
-                                "group flex flex-1 flex-col gap-2 rounded-xl border border-transparent px-3 py-2 transition-colors",
-                                "hover:border-[color:var(--accent-color)] hover:bg-[color:var(--accent-soft)]"
-                              )}
+                      <motion.ol
+                        initial={shouldReduceMotion ? false : "hidden"}
+                        animate="visible"
+                        variants={{
+                          hidden: {},
+                          visible: {
+                            transition: {
+                              staggerChildren: shouldReduceMotion ? 0 : 0.08,
+                            },
+                          },
+                        }}
+                        className="relative flex flex-col gap-4"
+                      >
+                        {scenario.steps.map((step, index) => {
+                          const isLast = index === scenario.steps.length - 1;
+                          return (
+                            <motion.li
+                              key={step.id}
+                              variants={stepVariants}
+                              className="relative flex gap-4"
                             >
-                              <div className="flex items-center gap-2 text-sm font-semibold text-text">
+                              <div className="relative flex flex-col items-center">
                                 <span
-                                  className="flex h-7 w-7 items-center justify-center rounded-full"
+                                  className="flex h-8 w-8 items-center justify-center rounded-full border border-primary-100 text-xs font-semibold"
                                   style={{
                                     backgroundColor: `${scenario.accent}1A`,
                                     color: scenario.accent,
                                   }}
-                                  aria-hidden="true"
                                 >
-                                  {step.icon}
+                                  {index + 1}
                                 </span>
-                                {step.title}
+                                {!isLast ? (
+                                  <motion.span
+                                    initial={shouldReduceMotion ? false : { scaleY: 0 }}
+                                    animate={{ scaleY: 1 }}
+                                    transition={{ duration: 0.4, ease: "easeOut" }}
+                                    className="mt-2 h-full w-px origin-top bg-primary-100"
+                                    aria-hidden="true"
+                                  />
+                                ) : null}
                               </div>
-                              <p className="text-xs italic text-text/60">{step.note}</p>
-                            </div>
-                          </motion.li>
-                        );
-                      })}
-                    </motion.ol>
+                              <div
+                                className={cn(
+                                  "group flex flex-1 flex-col gap-2 rounded-xl border border-transparent px-3 py-2 transition-colors",
+                                  "hover:border-[color:var(--accent-color)] hover:bg-[color:var(--accent-soft)]"
+                                )}
+                              >
+                                <div className="flex items-center gap-2 text-sm font-semibold text-text">
+                                  <span
+                                    className="flex h-7 w-7 items-center justify-center rounded-full"
+                                    style={{
+                                      backgroundColor: `${scenario.accent}1A`,
+                                      color: scenario.accent,
+                                    }}
+                                    aria-hidden="true"
+                                  >
+                                    {step.icon}
+                                  </span>
+                                  {step.title}
+                                </div>
+                                <p className="text-xs italic text-text/60">{step.note}</p>
+                              </div>
+                            </motion.li>
+                          );
+                        })}
+                      </motion.ol>
+                    </motion.div>
                   ) : null}
                 </AnimatePresence>
 
