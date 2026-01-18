@@ -27,6 +27,16 @@ export function FeaturesSection() {
   return (
     <section id="directions" className="px-6 pb-20">
       <div className="mx-auto max-w-6xl">
+        <div className="space-y-1" aria-hidden="true">
+          <span id="direction-neglinka" className="block scroll-mt-28" />
+          <span id="direction-litprosvet" className="block scroll-mt-28" />
+          <span id="direction-astronevod" className="block scroll-mt-28" />
+          <span id="direction-prazdniki" className="block scroll-mt-28" />
+          <span id="direction-dzhiva" className="block scroll-mt-28" />
+          <span id="direction-marshruty" className="block scroll-mt-28" />
+          <span id="direction-izvod" className="block scroll-mt-28" />
+          <span id="direction-teremok" className="block scroll-mt-28" />
+        </div>
         <div className="mb-10 flex flex-col gap-3 text-center">
           <p className="text-sm uppercase tracking-[0.2em] text-secondary-700">
             Что внутри
