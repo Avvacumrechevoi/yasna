@@ -1,18 +1,20 @@
 import * as React from "react"
+import { Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "ghost"
   size?: "sm" | "md" | "lg"
+  isLoading?: boolean
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant = "primary", size = "md", ...props }, ref) => {
+  ({ className, variant = "primary", size = "md", isLoading = false, children, disabled, ...props }, ref) => {
     return (
       <button
         className={cn(
-          "inline-flex items-center justify-center rounded-lg font-medium transition-all",
-          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2",
+          "inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all",
+          "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background",
           "disabled:pointer-events-none disabled:opacity-50",
           {
             // Variants
@@ -29,9 +31,14 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           },
           className
         )}
+        aria-busy={isLoading || undefined}
+        disabled={disabled || isLoading}
         ref={ref}
         {...props}
-      />
+      >
+        {isLoading ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" /> : null}
+        <span className={isLoading ? "opacity-80" : undefined}>{children}</span>
+      </button>
     )
   }
 )
