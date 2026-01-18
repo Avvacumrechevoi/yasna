@@ -1,7 +1,7 @@
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/Header";
+import { DirectionsSection } from "@/components/sections/DirectionsSection";
 import { EventsSection } from "@/components/sections/events";
-import { FeaturesSection } from "@/components/sections/features";
 import { HeroSection } from "@/components/sections/Hero";
 import { JoinSection } from "@/components/sections/join";
 import { ParticipationSection } from "@/components/sections/participation";
@@ -14,7 +14,7 @@ export default function Home() {
       <main>
         <HeroSection />
         <WhoIsThisForSection />
-        <FeaturesSection />
+        <DirectionsSection />
         <ParticipationSection />
         <EventsSection />
         <JoinSection />
