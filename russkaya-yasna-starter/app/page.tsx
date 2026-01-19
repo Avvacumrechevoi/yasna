@@ -5,6 +5,7 @@ import { EventsSection } from "@/components/sections/events";
 import { HeroSection } from "@/components/sections/Hero";
 import { HowToParticipateSection } from "@/components/sections/HowToParticipate";
 import { JoinSection } from "@/components/sections/join";
+import { TestimonialsSection } from "@/components/sections/Testimonials";
 import { WhoIsThisForSection } from "@/components/sections/WhoIsThisFor";
 
 export default function Home() {
@@ -16,6 +17,7 @@ export default function Home() {
         <WhoIsThisForSection />
         <DirectionsSection />
         <HowToParticipateSection />
+        <TestimonialsSection />
         <EventsSection />
         <JoinSection />
       </main>
