@@ -57,7 +57,9 @@ export function FAQSection() {
     <section id="faq" className="px-4 py-20 md:px-8">
       <div className="mx-auto flex max-w-[1200px] flex-col gap-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-primary md:text-4xl">Частые вопросы</h2>
+          <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-bold text-primary">
+            Частые вопросы
+          </h2>
           <p className="mt-3 text-text/70">Не нашли ответ? Напишите нам</p>
         </div>
 

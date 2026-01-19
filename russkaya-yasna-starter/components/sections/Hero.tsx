@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 import { CalendarDays, Compass, Users } from "lucide-react";
 
@@ -127,7 +128,7 @@ export function HeroSection() {
             animate="visible"
             variants={headlineVariants}
             aria-label={headline}
-            className="text-4xl font-bold text-primary md:text-5xl lg:text-6xl"
+            className="text-[clamp(2.5rem,5vw,4rem)] font-bold text-primary"
           >
             <span className="sr-only">{headline}</span>
             <span aria-hidden="true">
@@ -204,10 +205,13 @@ export function HeroSection() {
           className="relative mx-auto w-full max-w-md lg:max-w-none"
         >
           <div className="relative aspect-[4/5] overflow-hidden rounded-[32px] border border-primary-100 bg-white/80 shadow-xl">
-            <img
+            <Image
               src={heroImageSrc}
               alt="Абстрактная иллюстрация книг и старинных карт"
-              className="h-full w-full object-cover"
+              fill
+              sizes="(max-width: 768px) 80vw, (max-width: 1200px) 45vw, 520px"
+              className="object-cover"
+              priority
             />
             <div
               className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(43,69,112,0.12),_transparent_55%)]"

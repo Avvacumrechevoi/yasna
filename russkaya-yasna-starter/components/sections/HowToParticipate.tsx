@@ -246,7 +246,7 @@ export function HowToParticipateSection() {
           <p className="text-sm uppercase tracking-[0.2em] text-secondary-700">
             Как начать заниматься
           </p>
-          <h2 className="mt-3 text-3xl font-bold text-primary md:text-4xl">
+          <h2 className="mt-3 text-[clamp(2rem,4vw,2.75rem)] font-bold text-primary">
             Выберите сценарий, который вам подходит
           </h2>
         </div>

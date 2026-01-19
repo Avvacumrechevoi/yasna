@@ -100,7 +100,7 @@ export function WhoIsThisForSection() {
     <section className="bg-gradient-to-b from-white via-[#F2F6FF] to-background py-20">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-12 px-4 md:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-primary md:text-4xl">
+          <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-bold text-primary">
             Вы здесь, если:
           </h2>
           <p className="mt-3 text-text/70">Найдите себя среди наших участников</p>

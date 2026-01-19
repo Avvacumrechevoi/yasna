@@ -80,6 +80,8 @@ export function SignupForm({
     "idle"
   );
   const [submitError, setSubmitError] = React.useState<string | null>(null);
+  const [isMobile, setIsMobile] = React.useState(false);
+  const [showOptional, setShowOptional] = React.useState(false);
 
   const {
     register,
@@ -111,6 +113,14 @@ export function SignupForm({
       }
     }
   }, [isOpen, reset, setFocus, storageKey]);
+
+  React.useEffect(() => {
+    const query = window.matchMedia("(max-width: 640px)");
+    const update = () => setIsMobile(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
 
   React.useEffect(() => {
     if (!isOpen) return;
@@ -160,7 +170,8 @@ export function SignupForm({
         <input
           type="text"
           placeholder="Как к вам обращаться?"
-          className={`mt-2 w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          autoComplete="name"
+          className={`mt-2 min-h-[44px] w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             errors.name ? "border-red-400" : "border-primary-100"
           }`}
           aria-invalid={Boolean(errors.name)}
@@ -181,8 +192,10 @@ export function SignupForm({
         Контакт
         <input
           type="text"
+          inputMode="email"
+          autoComplete="email"
           placeholder="Telegram, WhatsApp или Email"
-          className={`mt-2 w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          className={`mt-2 min-h-[44px] w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             errors.contact ? "border-red-400" : "border-primary-100"
           }`}
           aria-invalid={Boolean(errors.contact)}
@@ -202,32 +215,72 @@ export function SignupForm({
         ) : null}
       </label>
 
-      <label className="block text-sm font-medium text-text">
-        Что вас привело к Ясне?
-        <textarea
-          placeholder="Расскажите в свободной форме..."
-          rows={4}
-          maxLength={500}
-          className={`mt-2 w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-            errors.motivation ? "border-red-400" : "border-primary-100"
-          }`}
-          aria-invalid={Boolean(errors.motivation)}
-          aria-describedby={errors.motivation ? "motivation-error" : "motivation-helper"}
-          disabled={isDisabled}
-          {...register("motivation", {
-            onFocus: () => onTrack?.("signup_field_focus", { field: "motivation" }),
-          })}
-        />
-        <div className="mt-1 flex items-center justify-between text-xs text-text/60">
-          <span id="motivation-helper">До 500 символов</span>
-          <span>{motivation.length} / 500</span>
+      {!isMobile ? (
+        <label className="block text-sm font-medium text-text">
+          Что вас привело к Ясне?
+          <textarea
+            placeholder="Расскажите в свободной форме..."
+            rows={4}
+            maxLength={500}
+            className={`mt-2 min-h-[120px] w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+              errors.motivation ? "border-red-400" : "border-primary-100"
+            }`}
+            aria-invalid={Boolean(errors.motivation)}
+            aria-describedby={errors.motivation ? "motivation-error" : "motivation-helper"}
+            disabled={isDisabled}
+            {...register("motivation", {
+              onFocus: () => onTrack?.("signup_field_focus", { field: "motivation" }),
+            })}
+          />
+          <div className="mt-1 flex items-center justify-between text-xs text-text/60">
+            <span id="motivation-helper">До 500 символов</span>
+            <span>{motivation.length} / 500</span>
+          </div>
+          {errors.motivation ? (
+            <p id="motivation-error" className="mt-1 text-xs text-red-500">
+              {errors.motivation.message}
+            </p>
+          ) : null}
+        </label>
+      ) : (
+        <div className="space-y-3">
+          <button
+            type="button"
+            onClick={() => setShowOptional((prev) => !prev)}
+            className="min-h-[44px] w-full rounded-lg border border-primary-100 px-3 text-sm text-text/70 transition-colors hover:bg-primary-50"
+          >
+            {showOptional ? "Скрыть дополнительный вопрос" : "Добавить сообщение (необязательно)"}
+          </button>
+          {showOptional ? (
+            <label className="block text-sm font-medium text-text">
+              Что вас привело к Ясне?
+              <textarea
+                placeholder="Расскажите в свободной форме..."
+                rows={4}
+                maxLength={500}
+                className={`mt-2 min-h-[120px] w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+                  errors.motivation ? "border-red-400" : "border-primary-100"
+                }`}
+                aria-invalid={Boolean(errors.motivation)}
+                aria-describedby={errors.motivation ? "motivation-error" : "motivation-helper"}
+                disabled={isDisabled}
+                {...register("motivation", {
+                  onFocus: () => onTrack?.("signup_field_focus", { field: "motivation" }),
+                })}
+              />
+              <div className="mt-1 flex items-center justify-between text-xs text-text/60">
+                <span id="motivation-helper">До 500 символов</span>
+                <span>{motivation.length} / 500</span>
+              </div>
+              {errors.motivation ? (
+                <p id="motivation-error" className="mt-1 text-xs text-red-500">
+                  {errors.motivation.message}
+                </p>
+              ) : null}
+            </label>
+          ) : null}
         </div>
-        {errors.motivation ? (
-          <p id="motivation-error" className="mt-1 text-xs text-red-500">
-            {errors.motivation.message}
-          </p>
-        ) : null}
-      </label>
+      )}
 
       <fieldset className="space-y-3 rounded-lg border border-primary-100 p-4">
         <legend className="text-sm font-medium text-text">
@@ -240,7 +293,7 @@ export function SignupForm({
             return (
               <label
                 key={direction.id}
-                className="flex cursor-pointer items-center gap-2 rounded-lg border border-primary-100 px-3 py-2 text-sm text-text/70 transition-colors hover:bg-primary-50"
+                className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg border border-primary-100 px-3 py-2 text-sm text-text/70 transition-colors hover:bg-primary-50"
               >
                 <input
                   type="checkbox"
@@ -266,7 +319,7 @@ export function SignupForm({
       <label className="block text-sm font-medium text-text">
         Как узнали о нас?
         <select
-          className={`mt-2 w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
+          className={`mt-2 min-h-[44px] w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             errors.referral ? "border-red-400" : "border-primary-100"
           }`}
           aria-invalid={Boolean(errors.referral)}
@@ -299,7 +352,7 @@ export function SignupForm({
 
       <Button
         type="submit"
-        className="w-full"
+        className="w-full min-h-[48px]"
         isLoading={submitState === "loading"}
         disabled={!isValid || isDisabled}
       >

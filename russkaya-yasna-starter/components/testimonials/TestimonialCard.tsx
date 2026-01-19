@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, Clock, Medal } from "lucide-react";
 
@@ -44,11 +45,13 @@ export function TestimonialCard({
       aria-label={`Открыть историю участника ${testimonial.name}`}
     >
       <div className="flex items-center gap-4">
-        <div className="h-20 w-20 overflow-hidden rounded-full border border-primary-100 bg-primary-50">
-          <img
+        <div className="relative h-20 w-20 overflow-hidden rounded-full border border-primary-100 bg-primary-50">
+          <Image
             src={testimonial.photo ?? "/images/avatar-placeholder.svg"}
             alt={`${testimonial.name}`}
-            className="h-full w-full object-cover"
+            fill
+            sizes="80px"
+            className="object-cover"
           />
         </div>
         <div className="flex-1">

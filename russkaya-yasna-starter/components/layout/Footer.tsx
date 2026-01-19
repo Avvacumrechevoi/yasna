@@ -140,12 +140,13 @@ export function Footer() {
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
                 placeholder="Email"
-                className="flex-1 rounded-lg border border-white/20 bg-white px-4 py-3 text-sm text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
+                autoComplete="email"
+                className="min-h-[44px] flex-1 rounded-lg border border-white/20 bg-white px-4 py-3 text-sm text-text focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary"
               />
               <Button
                 type="submit"
                 className={cn(
-                  "w-full bg-secondary text-primary hover:bg-secondary-400 sm:w-auto",
+                  "min-h-[44px] w-full bg-secondary text-primary hover:bg-secondary-400 sm:w-auto",
                   status === "loading" && "animate-pulse"
                 )}
                 isLoading={status === "loading"}
@@ -288,7 +289,8 @@ export function Footer() {
         <button
           type="button"
           onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-          className="fixed bottom-6 right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-primary shadow-lg transition-transform hover:-translate-y-1 md:bottom-6 md:right-6"
+          className="fixed right-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-secondary text-primary shadow-lg transition-transform hover:-translate-y-1 md:hidden"
+          style={{ bottom: "calc(1.5rem + env(safe-area-inset-bottom))" }}
           aria-label="Вернуться наверх"
         >
           <ArrowUp className="h-5 w-5" aria-hidden="true" />

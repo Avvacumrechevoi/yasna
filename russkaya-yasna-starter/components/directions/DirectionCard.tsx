@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
@@ -260,12 +261,14 @@ export function DirectionCard({
                         “{testimonial.quote}”
                       </p>
                       <div className="mt-auto flex items-center gap-3">
-                        <div className="h-10 w-10 overflow-hidden rounded-full bg-primary-50">
+                        <div className="relative h-10 w-10 overflow-hidden rounded-full bg-primary-50">
                           {testimonial.avatarUrl ? (
-                            <img
+                            <Image
                               src={testimonial.avatarUrl}
                               alt={testimonial.name}
-                              className="h-full w-full object-cover"
+                              fill
+                              sizes="40px"
+                              className="object-cover"
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center text-xs text-primary">

@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, ExternalLink, MessageCircle, Users } from "lucide-react";
 
@@ -186,9 +187,15 @@ export function DirectionContent({ direction }: DirectionContentProps) {
               {direction.gallery.map((item) => (
                 <div
                   key={item.id}
-                  className="overflow-hidden rounded-2xl border border-primary-100 bg-white"
+                  className="relative h-40 overflow-hidden rounded-2xl border border-primary-100 bg-white"
                 >
-                  <img src={item.src} alt={item.alt} className="h-40 w-full object-cover" />
+                  <Image
+                    src={item.src}
+                    alt={item.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    className="object-cover"
+                  />
                 </div>
               ))}
             </div>
@@ -209,11 +216,15 @@ export function DirectionContent({ direction }: DirectionContentProps) {
                   key={member.id}
                   className="flex gap-4 rounded-2xl border border-primary-100 bg-white p-4"
                 >
-                  <img
-                    src={member.photo ?? "/images/avatar-placeholder.svg"}
-                    alt={member.name}
-                    className="h-20 w-20 rounded-full object-cover"
-                  />
+                  <div className="relative h-20 w-20 overflow-hidden rounded-full">
+                    <Image
+                      src={member.photo ?? "/images/avatar-placeholder.svg"}
+                      alt={member.name}
+                      fill
+                      sizes="80px"
+                      className="object-cover"
+                    />
+                  </div>
                   <div className="space-y-2 text-sm text-text/70">
                     <p className="text-base font-semibold text-text">{member.name}</p>
                     <p className="text-xs text-text/60">{member.role}</p>

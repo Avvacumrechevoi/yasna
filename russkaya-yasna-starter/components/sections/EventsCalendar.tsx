@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import {
   addMonths,
   eachDayOfInterval,
@@ -61,6 +62,9 @@ export function EventsCalendarSection() {
   const [monthCursor, setMonthCursor] = React.useState(() => new Date());
   const [showRegistration, setShowRegistration] = React.useState(false);
   const [registeredState, setRegisteredState] = React.useState(false);
+  const [isFiltersOpen, setIsFiltersOpen] = React.useState(false);
+  const modalTouchStartY = React.useRef<number | null>(null);
+  const modalTouchCurrentY = React.useRef<number | null>(null);
 
   const directions = React.useMemo(() => {
     const unique = Array.from(new Set(eventsData.map((event) => event.direction)));
@@ -112,6 +116,22 @@ export function EventsCalendarSection() {
       acc[event.date] = acc[event.date] ? [...acc[event.date], event] : [event];
       return acc;
     }, {});
+  }, []);
+
+  const activeFilterCount = React.useMemo(() => {
+    let count = 0;
+    if (activeTime !== "all") count += 1;
+    if (activeDirection !== "Все") count += 1;
+    if (activeLocation !== "Все") count += 1;
+    if (activeTag !== "Все") count += 1;
+    return count;
+  }, [activeDirection, activeLocation, activeTag, activeTime]);
+
+  const resetFilters = React.useCallback(() => {
+    setActiveTime("all");
+    setActiveDirection("Все");
+    setActiveLocation("Все");
+    setActiveTag("Все");
   }, []);
 
   const dayEvents = React.useMemo(() => {
@@ -169,23 +189,58 @@ export function EventsCalendarSection() {
     URL.revokeObjectURL(link.href);
   };
 
+  const handleModalTouchStart = React.useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    modalTouchStartY.current = event.touches[0]?.clientY ?? null;
+    modalTouchCurrentY.current = modalTouchStartY.current;
+  }, []);
+
+  const handleModalTouchMove = React.useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    modalTouchCurrentY.current = event.touches[0]?.clientY ?? null;
+  }, []);
+
+  const handleModalTouchEnd = React.useCallback(
+    (event: React.TouchEvent<HTMLDivElement>) => {
+      if (modalTouchStartY.current === null || modalTouchCurrentY.current === null) return;
+      const deltaY = modalTouchCurrentY.current - modalTouchStartY.current;
+      if (deltaY > 90 && event.currentTarget.scrollTop <= 0) {
+        setSelectedEvent(null);
+      }
+      modalTouchStartY.current = null;
+      modalTouchCurrentY.current = null;
+    },
+    []
+  );
+
   return (
     <section id="events" className="bg-gradient-to-b from-white via-[#F6F8FE] to-background px-4 py-20 md:px-8">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-10">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-primary md:text-4xl">Ближайшие события</h2>
+          <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-bold text-primary">
+            Ближайшие события
+          </h2>
           <p className="mt-3 text-text/70">Открытые встречи, натурные уроки, праздники</p>
         </div>
 
         <div className="flex flex-col gap-4">
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center justify-between md:hidden">
+            <button
+              type="button"
+              onClick={() => setIsFiltersOpen(true)}
+              className="min-h-[44px] rounded-full border border-primary-100 bg-white px-4 text-sm font-medium text-text transition-colors hover:bg-primary-50"
+            >
+              Фильтры{activeFilterCount ? ` (${activeFilterCount})` : ""}
+            </button>
+            <div className="text-xs text-text/60">Найдено {filteredEvents.length}</div>
+          </div>
+
+          <div className="hidden flex-wrap items-center gap-3 md:flex">
             {timeFilters.map((filter) => (
               <button
                 key={filter.id}
                 type="button"
                 onClick={() => setActiveTime(filter.id)}
                 className={cn(
-                  "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                  "min-h-[44px] rounded-full px-4 py-2 text-sm font-medium transition-colors",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                   activeTime === filter.id
                     ? "bg-primary text-white"
@@ -201,7 +256,7 @@ export function EventsCalendarSection() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
+          <div className="hidden flex-wrap items-center gap-3 md:flex">
             <div className="flex flex-wrap gap-2">
               {directions.map((direction) => (
                 <button
@@ -209,7 +264,7 @@ export function EventsCalendarSection() {
                   type="button"
                   onClick={() => setActiveDirection(direction)}
                   className={cn(
-                    "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                    "min-h-[44px] rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
                     activeDirection === direction
                       ? "bg-secondary text-white"
                       : "bg-secondary-50 text-text/70 hover:bg-secondary-100"
@@ -223,7 +278,7 @@ export function EventsCalendarSection() {
             <select
               value={activeLocation}
               onChange={(event) => setActiveLocation(event.target.value)}
-              className="rounded-full border border-primary-100 bg-white px-4 py-2 text-xs text-text/70"
+              className="min-h-[44px] rounded-full border border-primary-100 bg-white px-4 py-2 text-xs text-text/70"
               aria-label="Фильтр по локации"
             >
               {locationOptions.map((option) => (
@@ -236,7 +291,7 @@ export function EventsCalendarSection() {
             <select
               value={activeTag}
               onChange={(event) => setActiveTag(event.target.value as EventTag | "Все")}
-              className="rounded-full border border-primary-100 bg-white px-4 py-2 text-xs text-text/70"
+              className="min-h-[44px] rounded-full border border-primary-100 bg-white px-4 py-2 text-xs text-text/70"
               aria-label="Фильтр по тегу"
             >
               <option value="Все">Все теги</option>
@@ -247,7 +302,32 @@ export function EventsCalendarSection() {
               ))}
             </select>
 
-            <div className="ml-auto flex rounded-full border border-primary-100 bg-white p-1 text-xs">
+            <div className="ml-auto flex min-h-[44px] rounded-full border border-primary-100 bg-white p-1 text-xs">
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "rounded-full px-3 py-1.5",
+                  viewMode === "list" ? "bg-primary text-white" : "text-text/60"
+                )}
+              >
+                Список
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("calendar")}
+                className={cn(
+                  "rounded-full px-3 py-1.5",
+                  viewMode === "calendar" ? "bg-primary text-white" : "text-text/60"
+                )}
+              >
+                Календарь
+              </button>
+            </div>
+          </div>
+
+          <div className="flex justify-end md:hidden">
+            <div className="flex min-h-[44px] rounded-full border border-primary-100 bg-white p-1 text-xs">
               <button
                 type="button"
                 onClick={() => setViewMode("list")}
@@ -271,6 +351,137 @@ export function EventsCalendarSection() {
             </div>
           </div>
         </div>
+
+        <AnimatePresence>
+          {isFiltersOpen ? (
+            <motion.div
+              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm md:hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsFiltersOpen(false)}
+              role="dialog"
+              aria-modal="true"
+              aria-label="Фильтры событий"
+            >
+              <motion.div
+                initial={{ y: "100%" }}
+                animate={{ y: 0 }}
+                exit={{ y: "100%" }}
+                transition={{ duration: 0.25, ease: "easeOut" }}
+                className="safe-bottom absolute bottom-0 left-0 right-0 rounded-t-3xl bg-background px-6 pb-8 pt-6"
+                onClick={(event) => event.stopPropagation()}
+              >
+                <div className="flex items-center justify-between">
+                  <p className="text-lg font-semibold text-text">Фильтры</p>
+                  <button
+                    type="button"
+                    onClick={() => setIsFiltersOpen(false)}
+                    className="min-h-[44px] min-w-[44px] rounded-full border border-primary-100 text-text"
+                    aria-label="Закрыть фильтры"
+                  >
+                    ×
+                  </button>
+                </div>
+
+                <div className="mt-5 space-y-5">
+                  <div>
+                    <p className="text-sm font-semibold text-text">Период</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {timeFilters.map((filter) => (
+                        <button
+                          key={filter.id}
+                          type="button"
+                          onClick={() => setActiveTime(filter.id)}
+                          className={cn(
+                            "min-h-[44px] rounded-full px-4 text-sm font-medium transition-colors",
+                            activeTime === filter.id
+                              ? "bg-primary text-white"
+                              : "bg-primary-50 text-text/70"
+                          )}
+                        >
+                          {filter.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-semibold text-text">Направления</p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {directions.map((direction) => (
+                        <button
+                          key={direction}
+                          type="button"
+                          onClick={() => setActiveDirection(direction)}
+                          className={cn(
+                            "min-h-[44px] rounded-full px-3 text-xs font-medium transition-colors",
+                            activeDirection === direction
+                              ? "bg-secondary text-white"
+                              : "bg-secondary-50 text-text/70"
+                          )}
+                        >
+                          {direction}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-semibold text-text">Локация</p>
+                    <select
+                      value={activeLocation}
+                      onChange={(event) => setActiveLocation(event.target.value)}
+                      className="mt-3 min-h-[44px] w-full rounded-xl border border-primary-100 bg-white px-4 text-sm text-text/70"
+                      aria-label="Фильтр по локации"
+                    >
+                      {locationOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <p className="text-sm font-semibold text-text">Теги</p>
+                    <select
+                      value={activeTag}
+                      onChange={(event) => setActiveTag(event.target.value as EventTag | "Все")}
+                      className="mt-3 min-h-[44px] w-full rounded-xl border border-primary-100 bg-white px-4 text-sm text-text/70"
+                      aria-label="Фильтр по тегу"
+                    >
+                      <option value="Все">Все теги</option>
+                      {tagOptions.map((option) => (
+                        <option key={option} value={option}>
+                          {option}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="mt-6 flex gap-3">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="min-h-[44px] flex-1"
+                    onClick={resetFilters}
+                  >
+                    Сбросить
+                  </Button>
+                  <Button
+                    type="button"
+                    className="min-h-[44px] flex-1"
+                    onClick={() => setIsFiltersOpen(false)}
+                  >
+                    Применить
+                  </Button>
+                </div>
+              </motion.div>
+            </motion.div>
+          ) : null}
+        </AnimatePresence>
 
         {viewMode === "list" ? (
           <>
@@ -312,7 +523,7 @@ export function EventsCalendarSection() {
                 <button
                   type="button"
                   onClick={() => setMonthCursor((prev) => addMonths(prev, -1))}
-                  className="rounded-full border border-primary-100 p-2 text-text/60 hover:bg-primary-50"
+                  className="min-h-[44px] min-w-[44px] rounded-full border border-primary-100 p-2 text-text/60 hover:bg-primary-50"
                   aria-label="Предыдущий месяц"
                 >
                   <ChevronLeft className="h-4 w-4" aria-hidden="true" />
@@ -323,7 +534,7 @@ export function EventsCalendarSection() {
                 <button
                   type="button"
                   onClick={() => setMonthCursor((prev) => addMonths(prev, 1))}
-                  className="rounded-full border border-primary-100 p-2 text-text/60 hover:bg-primary-50"
+                  className="min-h-[44px] min-w-[44px] rounded-full border border-primary-100 p-2 text-text/60 hover:bg-primary-50"
                   aria-label="Следующий месяц"
                 >
                   <ChevronRight className="h-4 w-4" aria-hidden="true" />
@@ -385,7 +596,7 @@ export function EventsCalendarSection() {
                       key={event.id}
                       type="button"
                       onClick={() => handleEventOpen(event)}
-                      className="w-full rounded-xl border border-primary-100 px-4 py-3 text-left text-sm transition-colors hover:bg-primary-50"
+                      className="min-h-[44px] w-full rounded-xl border border-primary-100 px-4 py-3 text-left text-sm transition-colors hover:bg-primary-50"
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-semibold text-text">{event.title}</span>
@@ -414,7 +625,7 @@ export function EventsCalendarSection() {
       <AnimatePresence>
         {selectedEvent ? (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-10"
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 px-0 py-0 sm:items-center sm:px-4 sm:py-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -427,8 +638,11 @@ export function EventsCalendarSection() {
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.96 }}
               transition={{ duration: 0.2 }}
-              className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
+              className="h-full w-full overflow-y-auto bg-white p-6 shadow-xl sm:max-h-[90vh] sm:max-w-3xl sm:rounded-2xl"
               onClick={(event) => event.stopPropagation()}
+              onTouchStart={handleModalTouchStart}
+              onTouchMove={handleModalTouchMove}
+              onTouchEnd={handleModalTouchEnd}
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -446,7 +660,7 @@ export function EventsCalendarSection() {
                 <button
                   type="button"
                   onClick={() => setSelectedEvent(null)}
-                  className="rounded-full border border-primary-100 px-3 py-1 text-sm text-text/60 hover:bg-primary-50"
+                  className="min-h-[44px] min-w-[44px] rounded-full border border-primary-100 px-3 py-1 text-sm text-text/60 hover:bg-primary-50"
                 >
                   Закрыть
                 </button>
@@ -478,11 +692,15 @@ export function EventsCalendarSection() {
 
               <div className="mt-6 rounded-xl border border-primary-100 bg-primary-50 px-4 py-4 text-sm text-text/70">
                 <div className="flex items-center gap-3">
-                  <img
-                    src={selectedEvent.organizer.photo ?? "/images/avatar-placeholder.svg"}
-                    alt={selectedEvent.organizer.name}
-                    className="h-10 w-10 rounded-full object-cover"
-                  />
+                  <div className="relative h-10 w-10 overflow-hidden rounded-full">
+                    <Image
+                      src={selectedEvent.organizer.photo ?? "/images/avatar-placeholder.svg"}
+                      alt={selectedEvent.organizer.name}
+                      fill
+                      sizes="40px"
+                      className="object-cover"
+                    />
+                  </div>
                   <div>
                     <p className="font-semibold text-text">{selectedEvent.organizer.name}</p>
                     <p className="text-xs text-text/60">{selectedEvent.organizer.role}</p>
@@ -519,21 +737,21 @@ export function EventsCalendarSection() {
                 <button
                   type="button"
                   onClick={() => handleShare(selectedEvent.link)}
-                  className="rounded-full border border-primary-100 px-3 py-1 hover:bg-primary-50"
+                  className="min-h-[44px] rounded-full border border-primary-100 px-3 py-1 hover:bg-primary-50"
                 >
                   Telegram
                 </button>
                 <button
                   type="button"
                   onClick={() => handleShare(selectedEvent.link)}
-                  className="rounded-full border border-primary-100 px-3 py-1 hover:bg-primary-50"
+                  className="min-h-[44px] rounded-full border border-primary-100 px-3 py-1 hover:bg-primary-50"
                 >
                   VK
                 </button>
                 <button
                   type="button"
                   onClick={() => handleShare(selectedEvent.link)}
-                  className="rounded-full border border-primary-100 px-3 py-1 hover:bg-primary-50"
+                  className="min-h-[44px] rounded-full border border-primary-100 px-3 py-1 hover:bg-primary-50"
                 >
                   <Copy className="mr-1 inline h-3 w-3" aria-hidden="true" />
                   Копировать ссылку
@@ -561,22 +779,26 @@ export function EventsCalendarSection() {
                         <input
                           type="text"
                           required
-                          className="mt-2 w-full rounded-lg border border-primary-100 px-3 py-2 text-sm"
+                          autoComplete="name"
+                          className="mt-2 min-h-[44px] w-full rounded-lg border border-primary-100 px-3 py-2 text-sm"
                         />
                       </label>
                       <label className="block text-sm font-medium text-text">
                         Контакт
                         <input
                           type="text"
+                          inputMode="email"
+                          autoComplete="email"
                           required
-                          className="mt-2 w-full rounded-lg border border-primary-100 px-3 py-2 text-sm"
+                          className="mt-2 min-h-[44px] w-full rounded-lg border border-primary-100 px-3 py-2 text-sm"
                         />
                       </label>
                       <label className="block text-sm font-medium text-text">
                         Как узнали
                         <input
                           type="text"
-                          className="mt-2 w-full rounded-lg border border-primary-100 px-3 py-2 text-sm"
+                          autoComplete="off"
+                          className="mt-2 min-h-[44px] w-full rounded-lg border border-primary-100 px-3 py-2 text-sm"
                         />
                       </label>
                       <Button type="submit">Подтвердить</Button>

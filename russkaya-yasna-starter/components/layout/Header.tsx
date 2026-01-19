@@ -31,6 +31,7 @@ type DirectionItem = {
   label: string;
   tagline: string;
   icon: LucideIcon;
+  isAnchor?: boolean;
 };
 
 const navItems: NavItem[] = [
@@ -41,6 +42,13 @@ const navItems: NavItem[] = [
 ];
 
 const directionItems: DirectionItem[] = [
+  {
+    href: "#directions",
+    label: "Все направления",
+    tagline: "Перейти к разделу на странице",
+    icon: Map,
+    isAnchor: true,
+  },
   {
     href: "/neglinka",
     label: "Неглинка / 38 Меридиан",
@@ -113,6 +121,8 @@ export function Header() {
   const [isDirectionsOpen, setIsDirectionsOpen] = React.useState(false);
   const [isDesktop, setIsDesktop] = React.useState(false);
   const { openModal } = useSignupModal();
+  const touchStartX = React.useRef<number | null>(null);
+  const touchCurrentX = React.useRef<number | null>(null);
 
   const scrollToSection = React.useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -143,17 +153,30 @@ export function Header() {
 
   const handleDirectionsClick = React.useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
-      if (isDesktop) {
-        event.preventDefault();
-        scrollToSection("directions");
-        return;
-      }
-
       event.preventDefault();
       setIsDirectionsOpen((open) => !open);
     },
-    [isDesktop, scrollToSection]
+    []
   );
+
+  const handleMenuTouchStart = React.useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    touchStartX.current = event.touches[0]?.clientX ?? null;
+    touchCurrentX.current = touchStartX.current;
+  }, []);
+
+  const handleMenuTouchMove = React.useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    touchCurrentX.current = event.touches[0]?.clientX ?? null;
+  }, []);
+
+  const handleMenuTouchEnd = React.useCallback(() => {
+    if (touchStartX.current === null || touchCurrentX.current === null) return;
+    const deltaX = touchCurrentX.current - touchStartX.current;
+    if (deltaX > 80) {
+      setIsMobileMenuOpen(false);
+    }
+    touchStartX.current = null;
+    touchCurrentX.current = null;
+  }, []);
 
   const handleDirectionsBlur = React.useCallback(
     (event: React.FocusEvent<HTMLDivElement>) => {
@@ -331,6 +354,9 @@ export function Header() {
                                     key={direction.href}
                                     href={direction.href}
                                     role="menuitem"
+                                    onClick={
+                                      direction.isAnchor ? handleNavClick("directions") : undefined
+                                    }
                                     className="flex items-start gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                   >
                                     <span className="mt-1 flex h-9 w-9 items-center justify-center rounded-full bg-accent-50">
@@ -448,6 +474,9 @@ export function Header() {
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="absolute right-0 top-0 h-full w-full max-w-sm bg-background px-6 py-10 shadow-2xl"
               onClick={(event) => event.stopPropagation()}
+              onTouchStart={handleMenuTouchStart}
+              onTouchMove={handleMenuTouchMove}
+              onTouchEnd={handleMenuTouchEnd}
             >
               <div className="flex items-center justify-between">
                 <span className="text-lg font-semibold text-primary">
@@ -512,7 +541,14 @@ export function Header() {
                                     <Link
                                       key={direction.href}
                                       href={direction.href}
-                                      onClick={() => setIsMobileMenuOpen(false)}
+                                      onClick={(event) => {
+                                        if (direction.isAnchor) {
+                                          handleNavClick("directions")(event);
+                                          return;
+                                        }
+                                        setIsMobileMenuOpen(false);
+                                        setIsDirectionsOpen(false);
+                                      }}
                                       className="flex min-h-[44px] items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                                     >
                                       <Icon
