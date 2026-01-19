@@ -77,9 +77,9 @@ export function SignupForm({
   onTrack,
   storageKey = "yasna-signup-draft",
 }: SignupFormProps) {
-  const [submitState, setSubmitState] = React.useState<"idle" | "loading" | "error">(
-    "idle"
-  );
+  const [submitState, setSubmitState] = React.useState<
+    "idle" | "loading" | "error" | "success"
+  >("idle");
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [isMobile, setIsMobile] = React.useState(false);
   const [showOptional, setShowOptional] = React.useState(false);
