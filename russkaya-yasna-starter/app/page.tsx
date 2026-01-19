@@ -1,12 +1,25 @@
-import { Footer } from "@/components/layout/footer";
+import dynamic from "next/dynamic";
+
+import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { DirectionsSection } from "@/components/sections/DirectionsSection";
-import { EventsSection } from "@/components/sections/events";
+import { FAQSection } from "@/components/sections/FAQ";
 import { HeroSection } from "@/components/sections/Hero";
 import { HowToParticipateSection } from "@/components/sections/HowToParticipate";
 import { JoinSection } from "@/components/sections/join";
-import { TestimonialsSection } from "@/components/sections/Testimonials";
 import { WhoIsThisForSection } from "@/components/sections/WhoIsThisFor";
+
+const TestimonialsSection = dynamic(
+  () =>
+    import("@/components/sections/Testimonials").then((mod) => mod.TestimonialsSection),
+  { ssr: false, loading: () => <div className="h-24 rounded-2xl skeleton" aria-hidden="true" /> }
+);
+
+const EventsCalendarSection = dynamic(
+  () =>
+    import("@/components/sections/EventsCalendar").then((mod) => mod.EventsCalendarSection),
+  { ssr: false, loading: () => <div className="h-24 rounded-2xl skeleton" aria-hidden="true" /> }
+);
 
 export default function Home() {
   return (
@@ -18,7 +31,8 @@ export default function Home() {
         <DirectionsSection />
         <HowToParticipateSection />
         <TestimonialsSection />
-        <EventsSection />
+        <FAQSection />
+        <EventsCalendarSection />
         <JoinSection />
       </main>
       <Footer />

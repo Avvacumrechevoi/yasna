@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Image from "next/image";
 import type { ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
@@ -131,9 +132,10 @@ export function DirectionCard({
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
       variants={containerVariants}
-      whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+      whileHover={shouldReduceMotion ? undefined : { y: -8 }}
+      whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
       className={cn(
-        "relative flex flex-col gap-6 rounded-2xl border border-primary-100 bg-white shadow-sm transition-shadow hover:shadow-lg",
+        "relative flex flex-col gap-6 rounded-2xl border border-primary-100 bg-white shadow-sm transition-shadow hover:border-primary-200 hover:shadow-xl",
         isCompact ? "p-6" : "p-8",
         className
       )}
@@ -260,12 +262,14 @@ export function DirectionCard({
                         “{testimonial.quote}”
                       </p>
                       <div className="mt-auto flex items-center gap-3">
-                        <div className="h-10 w-10 overflow-hidden rounded-full bg-primary-50">
+                        <div className="relative h-10 w-10 overflow-hidden rounded-full bg-primary-50">
                           {testimonial.avatarUrl ? (
-                            <img
+                            <Image
                               src={testimonial.avatarUrl}
                               alt={testimonial.name}
-                              className="h-full w-full object-cover"
+                              fill
+                              sizes="40px"
+                              className="object-cover"
                             />
                           ) : (
                             <div className="flex h-full w-full items-center justify-center text-xs text-primary">

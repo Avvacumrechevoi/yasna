@@ -1,3 +1,4 @@
+// Истории участников. Обновляйте тексты и фото в этом файле.
 export type Testimonial = {
   id: string;
   name: string;

@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,
@@ -18,6 +18,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useSignupModal } from "@/components/forms/SignupModal";
+import { listItemVariants, staggerChildren } from "@/lib/animation-variants";
 
 type NavItem = {
   id: string;
@@ -30,6 +32,7 @@ type DirectionItem = {
   label: string;
   tagline: string;
   icon: LucideIcon;
+  isAnchor?: boolean;
 };
 
 const navItems: NavItem[] = [
@@ -40,6 +43,13 @@ const navItems: NavItem[] = [
 ];
 
 const directionItems: DirectionItem[] = [
+  {
+    href: "#directions",
+    label: "Все направления",
+    tagline: "Перейти к разделу на странице",
+    icon: Map,
+    isAnchor: true,
+  },
   {
     href: "/neglinka",
     label: "Неглинка / 38 Меридиан",
@@ -111,6 +121,10 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isDirectionsOpen, setIsDirectionsOpen] = React.useState(false);
   const [isDesktop, setIsDesktop] = React.useState(false);
+  const { openModal } = useSignupModal();
+  const shouldReduceMotion = useReducedMotion();
+  const touchStartX = React.useRef<number | null>(null);
+  const touchCurrentX = React.useRef<number | null>(null);
 
   const scrollToSection = React.useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -130,19 +144,41 @@ export function Header() {
     [scrollToSection]
   );
 
+  const handleOpenSignup = React.useCallback(
+    (source: string) => {
+      openModal(source);
+      setIsMobileMenuOpen(false);
+      setIsDirectionsOpen(false);
+    },
+    [openModal]
+  );
+
   const handleDirectionsClick = React.useCallback(
     (event: React.MouseEvent<HTMLButtonElement>) => {
-      if (isDesktop) {
-        event.preventDefault();
-        scrollToSection("directions");
-        return;
-      }
-
       event.preventDefault();
       setIsDirectionsOpen((open) => !open);
     },
-    [isDesktop, scrollToSection]
+    []
   );
+
+  const handleMenuTouchStart = React.useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    touchStartX.current = event.touches[0]?.clientX ?? null;
+    touchCurrentX.current = touchStartX.current;
+  }, []);
+
+  const handleMenuTouchMove = React.useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    touchCurrentX.current = event.touches[0]?.clientX ?? null;
+  }, []);
+
+  const handleMenuTouchEnd = React.useCallback(() => {
+    if (touchStartX.current === null || touchCurrentX.current === null) return;
+    const deltaX = touchCurrentX.current - touchStartX.current;
+    if (deltaX > 80) {
+      setIsMobileMenuOpen(false);
+    }
+    touchStartX.current = null;
+    touchCurrentX.current = null;
+  }, []);
 
   const handleDirectionsBlur = React.useCallback(
     (event: React.FocusEvent<HTMLDivElement>) => {
@@ -223,7 +259,7 @@ export function Header() {
       className={cn(
         "sticky top-0 z-50 w-full transition-all",
         isScrolled
-          ? "border-b border-primary-100 bg-background/80 backdrop-blur"
+          ? "border-b border-primary-100 bg-background/80 shadow-sm backdrop-blur"
           : "bg-transparent"
       )}
     >
@@ -312,34 +348,46 @@ export function Header() {
                             transition={{ duration: 0.25, ease: "easeOut" }}
                             className="absolute left-1/2 top-full z-20 mt-3 w-[420px] -translate-x-1/2 overflow-hidden rounded-2xl border border-primary-100 bg-white p-4 shadow-xl"
                           >
-                            <div className="grid gap-2">
+                            <motion.div
+                              initial="hidden"
+                              animate="visible"
+                              variants={staggerChildren(shouldReduceMotion)}
+                              className="grid gap-2"
+                            >
                               {directionItems.map((direction) => {
                                 const Icon = direction.icon;
                                 return (
-                                  <Link
+                                  <motion.div
                                     key={direction.href}
-                                    href={direction.href}
-                                    role="menuitem"
-                                    className="flex items-start gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                    variants={listItemVariants(shouldReduceMotion)}
                                   >
-                                    <span className="mt-1 flex h-9 w-9 items-center justify-center rounded-full bg-accent-50">
-                                      <Icon
-                                        className="h-4 w-4 text-accent"
-                                        aria-hidden="true"
-                                      />
-                                    </span>
-                                    <span>
-                                      <span className="block text-sm font-semibold text-text">
-                                        {direction.label}
+                                    <Link
+                                      href={direction.href}
+                                      role="menuitem"
+                                      onClick={
+                                        direction.isAnchor ? handleNavClick("directions") : undefined
+                                      }
+                                      className="flex items-start gap-3 rounded-xl px-3 py-3 transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                    >
+                                      <span className="mt-1 flex h-9 w-9 items-center justify-center rounded-full bg-accent-50">
+                                        <Icon
+                                          className="h-4 w-4 text-accent"
+                                          aria-hidden="true"
+                                        />
                                       </span>
-                                      <span className="block text-xs text-text/60">
-                                        {direction.tagline}
+                                      <span>
+                                        <span className="block text-sm font-semibold text-text">
+                                          {direction.label}
+                                        </span>
+                                        <span className="block text-xs text-text/60">
+                                          {direction.tagline}
+                                        </span>
                                       </span>
-                                    </span>
-                                  </Link>
+                                    </Link>
+                                  </motion.div>
                                 );
                               })}
-                            </div>
+                            </motion.div>
                           </motion.div>
                         ) : null}
                       </AnimatePresence>
@@ -372,8 +420,11 @@ export function Header() {
         <div className="hidden items-center gap-3 lg:flex">
           <Button
             size="sm"
-            className="rounded-full px-5"
-            onClick={handleNavClick("join")}
+            className={cn(
+              "rounded-full px-5 transition-all",
+              isScrolled ? "opacity-100" : "opacity-0 pointer-events-none"
+            )}
+            onClick={() => handleOpenSignup("header-fixed")}
           >
             Вступить
           </Button>
@@ -434,6 +485,9 @@ export function Header() {
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="absolute right-0 top-0 h-full w-full max-w-sm bg-background px-6 py-10 shadow-2xl"
               onClick={(event) => event.stopPropagation()}
+              onTouchStart={handleMenuTouchStart}
+              onTouchMove={handleMenuTouchMove}
+              onTouchEnd={handleMenuTouchEnd}
             >
               <div className="flex items-center justify-between">
                 <span className="text-lg font-semibold text-primary">
@@ -491,27 +545,43 @@ export function Header() {
                               transition={{ duration: 0.25, ease: "easeOut" }}
                               className="mt-2 overflow-hidden rounded-2xl border border-primary-100 bg-white"
                             >
-                              <div className="flex flex-col gap-1 p-2">
+                              <motion.div
+                                initial="hidden"
+                                animate="visible"
+                                variants={staggerChildren(shouldReduceMotion)}
+                                className="flex flex-col gap-1 p-2"
+                              >
                                 {directionItems.map((direction) => {
                                   const Icon = direction.icon;
                                   return (
-                                    <Link
+                                    <motion.div
                                       key={direction.href}
-                                      href={direction.href}
-                                      onClick={() => setIsMobileMenuOpen(false)}
-                                      className="flex min-h-[44px] items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                      variants={listItemVariants(shouldReduceMotion)}
                                     >
-                                      <Icon
-                                        className="h-4 w-4 text-accent"
-                                        aria-hidden="true"
-                                      />
-                                      <span className="text-text/80">
-                                        {direction.label}
-                                      </span>
-                                    </Link>
+                                      <Link
+                                        href={direction.href}
+                                        onClick={(event) => {
+                                          if (direction.isAnchor) {
+                                            handleNavClick("directions")(event);
+                                            return;
+                                          }
+                                          setIsMobileMenuOpen(false);
+                                          setIsDirectionsOpen(false);
+                                        }}
+                                        className="flex min-h-[44px] items-center gap-3 rounded-xl px-4 py-3 text-sm transition-colors hover:bg-primary-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                                      >
+                                        <Icon
+                                          className="h-4 w-4 text-accent"
+                                          aria-hidden="true"
+                                        />
+                                        <span className="text-text/80">
+                                          {direction.label}
+                                        </span>
+                                      </Link>
+                                    </motion.div>
                                   );
                                 })}
-                              </div>
+                              </motion.div>
                             </motion.div>
                           ) : null}
                         </AnimatePresence>
@@ -541,7 +611,7 @@ export function Header() {
               <div className="mt-8">
                 <Button
                   className="w-full rounded-full"
-                  onClick={handleNavClick("join")}
+                  onClick={() => handleOpenSignup("mobile-menu")}
                 >
                   Вступить
                 </Button>

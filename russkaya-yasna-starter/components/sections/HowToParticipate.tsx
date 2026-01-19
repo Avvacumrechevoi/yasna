@@ -22,6 +22,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useSignupModal } from "@/components/forms/SignupModal";
 
 type ScenarioStep = {
   id: string;
@@ -214,6 +215,7 @@ const stepVariants = {
 export function HowToParticipateSection() {
   const [activeId, setActiveId] = React.useState<string | null>(scenarios[0]?.id ?? null);
   const shouldReduceMotion = useReducedMotion();
+  const { openModal } = useSignupModal();
 
   const scrollToAnchor = React.useCallback(
     (target: Scenario["ctaTarget"]) => {
@@ -226,6 +228,17 @@ export function HowToParticipateSection() {
     [shouldReduceMotion]
   );
 
+  const handleScenarioCta = React.useCallback(
+    (scenario: Scenario) => {
+      if (scenario.id === "direction") {
+        openModal("scenario-direction");
+        return;
+      }
+      scrollToAnchor(scenario.ctaTarget);
+    },
+    [openModal, scrollToAnchor]
+  );
+
   return (
     <section id="how-it-works" className="px-4 py-20 md:px-8">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-12">
@@ -233,7 +246,7 @@ export function HowToParticipateSection() {
           <p className="text-sm uppercase tracking-[0.2em] text-secondary-700">
             Как начать заниматься
           </p>
-          <h2 className="mt-3 text-3xl font-bold text-primary md:text-4xl">
+          <h2 className="mt-3 text-[clamp(2rem,4vw,2.75rem)] font-bold text-primary">
             Выберите сценарий, который вам подходит
           </h2>
         </div>
@@ -385,7 +398,7 @@ export function HowToParticipateSection() {
                   <Button
                     onClick={(event) => {
                       event.stopPropagation();
-                      scrollToAnchor(scenario.ctaTarget);
+                      handleScenarioCta(scenario);
                     }}
                   >
                     {scenario.ctaLabel}
@@ -406,7 +419,7 @@ export function HowToParticipateSection() {
           </p>
           <Button
             className="mt-4"
-            onClick={() => scrollToAnchor("join")}
+            onClick={() => openModal("quiz-cta")}
             variant="secondary"
           >
             Пройти тест

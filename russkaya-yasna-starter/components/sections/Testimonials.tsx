@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
+import "swiper/css/effect-fade";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
@@ -13,6 +14,7 @@ import { TestimonialCard } from "@/components/testimonials/TestimonialCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { testimonialsData, type Testimonial } from "@/lib/testimonials-data";
+import { fadeInUp, staggerChildren } from "@/lib/animation-variants";
 
 type FilterOption = {
   id: string;
@@ -34,9 +36,12 @@ const quoteModalVariants = {
 };
 
 export function TestimonialsSection() {
+  const shouldReduceMotion = useReducedMotion();
   const [activeFilter, setActiveFilter] = React.useState("all");
   const [selectedTestimonial, setSelectedTestimonial] = React.useState<Testimonial | null>(null);
   const [isFormOpen, setIsFormOpen] = React.useState(false);
+  const modalTouchStartY = React.useRef<number | null>(null);
+  const modalTouchCurrentY = React.useRef<number | null>(null);
 
   const filterOptions = React.useMemo<FilterOption[]>(() => {
     const available = new Set(testimonialsData.map((item) => item.direction));
@@ -81,11 +86,34 @@ export function TestimonialsSection() {
     };
   }, [selectedTestimonial, isFormOpen]);
 
+  const handleModalTouchStart = React.useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    modalTouchStartY.current = event.touches[0]?.clientY ?? null;
+    modalTouchCurrentY.current = modalTouchStartY.current;
+  }, []);
+
+  const handleModalTouchMove = React.useCallback((event: React.TouchEvent<HTMLDivElement>) => {
+    modalTouchCurrentY.current = event.touches[0]?.clientY ?? null;
+  }, []);
+
+  const handleModalTouchEnd = React.useCallback(
+    (event: React.TouchEvent<HTMLDivElement>) => {
+      if (modalTouchStartY.current === null || modalTouchCurrentY.current === null) return;
+      const deltaY = modalTouchCurrentY.current - modalTouchStartY.current;
+      if (deltaY > 90 && event.currentTarget.scrollTop <= 0) {
+        setSelectedTestimonial(null);
+        setIsFormOpen(false);
+      }
+      modalTouchStartY.current = null;
+      modalTouchCurrentY.current = null;
+    },
+    []
+  );
+
   return (
     <section className="bg-gradient-to-b from-white via-[#F4F7FD] to-background px-4 py-20 md:px-8">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-10">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-primary md:text-4xl">
+          <h2 className="text-[clamp(2rem,4vw,2.75rem)] font-bold text-primary">
             Истории участников
           </h2>
           <p className="mt-3 text-text/70">Как Ясна изменила их жизнь</p>
@@ -103,7 +131,7 @@ export function TestimonialsSection() {
                 type="button"
                 onClick={() => setActiveFilter(option.id)}
                 className={cn(
-                  "inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                  "inline-flex min-h-[44px] items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition-colors",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                   activeFilter === option.id
                     ? "bg-primary text-white"
@@ -121,12 +149,18 @@ export function TestimonialsSection() {
 
         <div className="md:hidden">
           <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
+            modules={[Navigation, Pagination, Autoplay, EffectFade]}
             slidesPerView={1}
             spaceBetween={24}
+            effect={shouldReduceMotion ? "slide" : "fade"}
+            fadeEffect={shouldReduceMotion ? undefined : { crossFade: true }}
+            speed={shouldReduceMotion ? 0 : 400}
             pagination={{ clickable: true }}
             navigation
-            autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            grabCursor
+            autoplay={
+              shouldReduceMotion ? false : { delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }
+            }
             className="pb-10"
           >
             {filteredTestimonials.map((testimonial) => (
@@ -144,19 +178,20 @@ export function TestimonialsSection() {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeFilter}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3 }}
+            initial={shouldReduceMotion ? false : "hidden"}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerChildren(shouldReduceMotion)}
             className="hidden gap-8 md:grid md:grid-cols-2 xl:grid-cols-3"
           >
             {filteredTestimonials.map((testimonial) => (
-              <TestimonialCard
-                key={testimonial.id}
-                testimonial={testimonial}
-                onOpen={setSelectedTestimonial}
-                onDirectionClick={(direction) => setActiveFilter(direction)}
-              />
+              <motion.div key={testimonial.id} variants={fadeInUp({ reduceMotion: shouldReduceMotion })}>
+                <TestimonialCard
+                  testimonial={testimonial}
+                  onOpen={setSelectedTestimonial}
+                  onDirectionClick={(direction) => setActiveFilter(direction)}
+                />
+              </motion.div>
             ))}
           </motion.div>
         </AnimatePresence>
@@ -171,7 +206,7 @@ export function TestimonialsSection() {
       <AnimatePresence>
         {selectedTestimonial ? (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-10"
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 px-0 py-0 sm:items-center sm:px-4 sm:py-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -185,8 +220,11 @@ export function TestimonialsSection() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
+              className="h-full w-full overflow-y-auto bg-white p-6 shadow-xl sm:max-h-[90vh] sm:max-w-2xl sm:rounded-2xl"
               onClick={(event) => event.stopPropagation()}
+              onTouchStart={handleModalTouchStart}
+              onTouchMove={handleModalTouchMove}
+              onTouchEnd={handleModalTouchEnd}
             >
               <div className="flex items-start justify-between gap-4">
                 <div>
@@ -200,7 +238,7 @@ export function TestimonialsSection() {
                 <button
                   type="button"
                   onClick={() => setSelectedTestimonial(null)}
-                  className="rounded-full border border-primary-100 px-3 py-1 text-sm text-text/70 hover:bg-primary-50"
+                  className="min-h-[44px] min-w-[44px] rounded-full border border-primary-100 px-3 py-1 text-sm text-text/70 hover:bg-primary-50"
                 >
                   Закрыть
                 </button>
@@ -247,7 +285,7 @@ export function TestimonialsSection() {
       <AnimatePresence>
         {isFormOpen ? (
           <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 py-10"
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 px-0 py-0 sm:items-center sm:px-4 sm:py-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -261,8 +299,11 @@ export function TestimonialsSection() {
               initial="hidden"
               animate="visible"
               exit="exit"
-              className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl"
+              className="h-full w-full overflow-y-auto bg-white p-6 shadow-xl sm:max-w-xl sm:rounded-2xl"
               onClick={(event) => event.stopPropagation()}
+              onTouchStart={handleModalTouchStart}
+              onTouchMove={handleModalTouchMove}
+              onTouchEnd={handleModalTouchEnd}
             >
               <div className="flex items-center justify-between gap-4">
                 <h3 className="text-xl font-semibold text-text" id="testimonial-form-title">
@@ -271,7 +312,7 @@ export function TestimonialsSection() {
                 <button
                   type="button"
                   onClick={() => setIsFormOpen(false)}
-                  className="rounded-full border border-primary-100 px-3 py-1 text-sm text-text/70 hover:bg-primary-50"
+                  className="min-h-[44px] min-w-[44px] rounded-full border border-primary-100 px-3 py-1 text-sm text-text/70 hover:bg-primary-50"
                 >
                   Закрыть
                 </button>
@@ -290,7 +331,8 @@ export function TestimonialsSection() {
                     type="text"
                     name="name"
                     required
-                    className="mt-2 w-full rounded-lg border border-primary-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                    autoComplete="name"
+                    className="mt-2 min-h-[44px] w-full rounded-lg border border-primary-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     placeholder="Введите имя"
                   />
                 </label>
@@ -300,7 +342,7 @@ export function TestimonialsSection() {
                   <select
                     name="direction"
                     required
-                    className="mt-2 w-full rounded-lg border border-primary-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                    className="mt-2 min-h-[44px] w-full rounded-lg border border-primary-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                   >
                     <option value="">Выберите направление</option>
                     {directionOrder.map((direction) => (
@@ -317,7 +359,7 @@ export function TestimonialsSection() {
                     name="story"
                     required
                     rows={4}
-                    className="mt-2 w-full rounded-lg border border-primary-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+                    className="mt-2 min-h-[120px] w-full rounded-lg border border-primary-100 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
                     placeholder="Поделитесь историей"
                   />
                 </label>
@@ -332,8 +374,15 @@ export function TestimonialsSection() {
                 </label>
 
                 <div className="flex flex-col gap-3 pt-2 sm:flex-row">
-                  <Button type="submit">Отправить</Button>
-                  <Button type="button" variant="secondary" onClick={() => setIsFormOpen(false)}>
+                  <Button type="submit" className="min-h-[44px]">
+                    Отправить
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    className="min-h-[44px]"
+                    onClick={() => setIsFormOpen(false)}
+                  >
                     Отмена
                   </Button>
                 </div>
