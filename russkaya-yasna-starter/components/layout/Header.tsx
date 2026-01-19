@@ -18,6 +18,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useSignupModal } from "@/components/forms/SignupModal";
 
 type NavItem = {
   id: string;
@@ -111,6 +112,7 @@ export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isDirectionsOpen, setIsDirectionsOpen] = React.useState(false);
   const [isDesktop, setIsDesktop] = React.useState(false);
+  const { openModal } = useSignupModal();
 
   const scrollToSection = React.useCallback((sectionId: string) => {
     const element = document.getElementById(sectionId);
@@ -128,6 +130,15 @@ export function Header() {
       setIsDirectionsOpen(false);
     },
     [scrollToSection]
+  );
+
+  const handleOpenSignup = React.useCallback(
+    (source: string) => {
+      openModal(source);
+      setIsMobileMenuOpen(false);
+      setIsDirectionsOpen(false);
+    },
+    [openModal]
   );
 
   const handleDirectionsClick = React.useCallback(
@@ -372,8 +383,11 @@ export function Header() {
         <div className="hidden items-center gap-3 lg:flex">
           <Button
             size="sm"
-            className="rounded-full px-5"
-            onClick={handleNavClick("join")}
+            className={cn(
+              "rounded-full px-5 transition-all",
+              isScrolled ? "opacity-100" : "opacity-0 pointer-events-none"
+            )}
+            onClick={() => handleOpenSignup("header-fixed")}
           >
             Вступить
           </Button>
@@ -541,7 +555,7 @@ export function Header() {
               <div className="mt-8">
                 <Button
                   className="w-full rounded-full"
-                  onClick={handleNavClick("join")}
+                  onClick={() => handleOpenSignup("mobile-menu")}
                 >
                   Вступить
                 </Button>

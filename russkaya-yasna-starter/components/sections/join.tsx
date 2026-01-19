@@ -1,6 +1,11 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
+import { useSignupModal } from "@/components/forms/SignupModal";
 
 export function JoinSection() {
+  const { openModal } = useSignupModal();
+
   return (
     <section id="join" className="px-6 pb-24">
       <div className="mx-auto max-w-6xl">
@@ -17,7 +22,10 @@ export function JoinSection() {
             </p>
           </div>
 
-          <Button className="rounded-full bg-white px-8 text-primary hover:bg-white/90">
+          <Button
+            className="rounded-full bg-white px-8 text-primary hover:bg-white/90"
+            onClick={() => openModal("bottom-cta")}
+          >
             Оставить заявку
           </Button>
         </div>

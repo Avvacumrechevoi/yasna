@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
+import { SignupModalProvider } from "@/components/forms/SignupModal";
 
 const inter = Inter({ 
   subsets: ["latin", "cyrillic"],
@@ -59,7 +60,7 @@ export default function RootLayout({
   return (
     <html lang="ru" className={`${inter.variable} ${playfair.variable}`}>
       <body className={`${inter.className} antialiased bg-background text-text`}>
-        {children}
+        <SignupModalProvider>{children}</SignupModalProvider>
       </body>
     </html>
   );

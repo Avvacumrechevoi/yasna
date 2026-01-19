@@ -22,6 +22,7 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useSignupModal } from "@/components/forms/SignupModal";
 
 type ScenarioStep = {
   id: string;
@@ -214,6 +215,7 @@ const stepVariants = {
 export function HowToParticipateSection() {
   const [activeId, setActiveId] = React.useState<string | null>(scenarios[0]?.id ?? null);
   const shouldReduceMotion = useReducedMotion();
+  const { openModal } = useSignupModal();
 
   const scrollToAnchor = React.useCallback(
     (target: Scenario["ctaTarget"]) => {
@@ -224,6 +226,17 @@ export function HowToParticipateSection() {
       }
     },
     [shouldReduceMotion]
+  );
+
+  const handleScenarioCta = React.useCallback(
+    (scenario: Scenario) => {
+      if (scenario.id === "direction") {
+        openModal("scenario-direction");
+        return;
+      }
+      scrollToAnchor(scenario.ctaTarget);
+    },
+    [openModal, scrollToAnchor]
   );
 
   return (
@@ -385,7 +398,7 @@ export function HowToParticipateSection() {
                   <Button
                     onClick={(event) => {
                       event.stopPropagation();
-                      scrollToAnchor(scenario.ctaTarget);
+                      handleScenarioCta(scenario);
                     }}
                   >
                     {scenario.ctaLabel}
@@ -406,7 +419,7 @@ export function HowToParticipateSection() {
           </p>
           <Button
             className="mt-4"
-            onClick={() => scrollToAnchor("join")}
+            onClick={() => openModal("quiz-cta")}
             variant="secondary"
           >
             Пройти тест

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 
 import { DirectionCard } from "@/components/directions/DirectionCard";
 import { Button } from "@/components/ui/button";
+import { useSignupModal } from "@/components/forms/SignupModal";
 import { cn } from "@/lib/utils";
 import {
   directionFilters,
@@ -18,6 +19,7 @@ export function DirectionsSection() {
   const [isCompact, setIsCompact] = React.useState(false);
   const shouldReduceMotion = useReducedMotion();
   const router = useRouter();
+  const { openModal } = useSignupModal();
 
   React.useEffect(() => {
     const query = window.matchMedia("(max-width: 767px)");
@@ -113,7 +115,7 @@ export function DirectionsSection() {
                   variant={isCompact ? "compact" : "expanded"}
                   className="scroll-mt-28"
                   onCardClick={() => router.push(direction.href)}
-                  onPrimaryAction={scrollToJoin}
+                  onPrimaryAction={() => openModal(`direction-card:${direction.id}`)}
                   onSecondaryAction={() => router.push(direction.href)}
                 />
               </motion.div>
