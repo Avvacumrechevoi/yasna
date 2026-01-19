@@ -4,7 +4,6 @@ import * as React from "react";
 import Image from "next/image";
 import type { ReactNode } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import type { LucideIcon } from "lucide-react";
 import {
   Calendar,
   CheckCircle2,
@@ -15,6 +14,8 @@ import {
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { resourceIconMap } from "@/lib/direction-icons";
+import type { ResourceIconKey } from "@/lib/directions-data";
 
 export type TestimonialType = {
   id: string;
@@ -35,7 +36,7 @@ export type ResourceType = {
   id: string;
   label: string;
   href: string;
-  icon?: LucideIcon;
+  icon?: ResourceIconKey;
 };
 
 export type DirectionCardProps = {
@@ -343,7 +344,7 @@ export function DirectionCard({
             {resources.length ? (
               <div className="mt-4 flex flex-wrap gap-3 text-sm">
                 {resources.map((resource) => {
-                  const ResourceIcon = resource.icon;
+                  const ResourceIcon = resource.icon ? resourceIconMap[resource.icon] : null;
                   return (
                     <a
                       key={resource.id}

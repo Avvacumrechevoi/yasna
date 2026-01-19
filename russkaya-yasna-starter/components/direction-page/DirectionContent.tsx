@@ -11,6 +11,7 @@ import { useSignupModal } from "@/components/forms/SignupModal";
 import { cn } from "@/lib/utils";
 import type { DirectionData } from "@/lib/directions-data";
 import { directionsData } from "@/lib/directions-data";
+import { resourceIconMap } from "@/lib/direction-icons";
 
 type DirectionContentProps = {
   direction: DirectionData;
@@ -281,18 +282,23 @@ export function DirectionContent({ direction }: DirectionContentProps) {
             </div>
             {direction.resources.length ? (
               <div className="flex flex-wrap gap-2">
-                {direction.resources.map((resource) => (
-                  <a
-                    key={resource.id}
-                    href={resource.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-primary-50 px-3 py-2 text-xs text-text/60"
-                  >
-                    {resource.icon ? <resource.icon className="h-4 w-4" aria-hidden="true" /> : null}
-                    {resource.label}
-                  </a>
-                ))}
+                {direction.resources.map((resource) => {
+                  const ResourceIcon = resource.icon ? resourceIconMap[resource.icon] : null;
+                  return (
+                    <a
+                      key={resource.id}
+                      href={resource.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-primary-100 bg-primary-50 px-3 py-2 text-xs text-text/60"
+                    >
+                      {ResourceIcon ? (
+                        <ResourceIcon className="h-4 w-4" aria-hidden="true" />
+                      ) : null}
+                      {resource.label}
+                    </a>
+                  );
+                })}
               </div>
             ) : null}
           </motion.section>
