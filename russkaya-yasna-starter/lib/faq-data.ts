@@ -1,3 +1,4 @@
+// Частые вопросы. Редактируйте список для обновления информации на сайте.
 export type FaqItem = {
   id: string;
   question: string;

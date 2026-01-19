@@ -1,3 +1,4 @@
+// Контент направлений. Обновляйте тексты и списки ниже при смене программы.
 import type { LucideIcon } from "lucide-react";
 import {
   BookOpen,

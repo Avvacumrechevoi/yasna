@@ -152,13 +152,15 @@ export function TestimonialsSection() {
             modules={[Navigation, Pagination, Autoplay, EffectFade]}
             slidesPerView={1}
             spaceBetween={24}
-            effect="fade"
-            fadeEffect={{ crossFade: true }}
-            speed={400}
+            effect={shouldReduceMotion ? "slide" : "fade"}
+            fadeEffect={shouldReduceMotion ? undefined : { crossFade: true }}
+            speed={shouldReduceMotion ? 0 : 400}
             pagination={{ clickable: true }}
             navigation
             grabCursor
-            autoplay={{ delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }}
+            autoplay={
+              shouldReduceMotion ? false : { delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true }
+            }
             className="pb-10"
           >
             {filteredTestimonials.map((testimonial) => (
