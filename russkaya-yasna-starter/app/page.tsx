@@ -2,6 +2,7 @@ import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/Header";
 import { DirectionsSection } from "@/components/sections/DirectionsSection";
 import { EventsSection } from "@/components/sections/events";
+import { FAQSection } from "@/components/sections/FAQ";
 import { HeroSection } from "@/components/sections/Hero";
 import { HowToParticipateSection } from "@/components/sections/HowToParticipate";
 import { JoinSection } from "@/components/sections/join";
@@ -18,6 +19,7 @@ export default function Home() {
         <DirectionsSection />
         <HowToParticipateSection />
         <TestimonialsSection />
+        <FAQSection />
         <EventsSection />
         <JoinSection />
       </main>
