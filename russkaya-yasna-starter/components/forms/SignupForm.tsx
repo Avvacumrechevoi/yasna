@@ -175,6 +175,7 @@ export function SignupForm({
             type="text"
             placeholder="Как к вам обращаться?"
             autoComplete="name"
+            onFocus={() => onTrack?.("signup_field_focus", { field: "name" })}
             className={`mt-2 min-h-[44px] w-full rounded-lg border px-3 py-3 pr-10 text-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:shadow-sm ${
               errors.name
                 ? "border-red-400 animate-shake"
@@ -185,9 +186,7 @@ export function SignupForm({
             aria-invalid={Boolean(errors.name)}
             aria-describedby={errors.name ? "name-error" : undefined}
             disabled={isDisabled}
-            {...register("name", {
-              onFocus: () => onTrack?.("signup_field_focus", { field: "name" }),
-            })}
+            {...register("name")}
           />
           <CheckCircle2
             className={cn(
@@ -212,6 +211,7 @@ export function SignupForm({
             inputMode="email"
             autoComplete="email"
             placeholder="Telegram, WhatsApp или Email"
+            onFocus={() => onTrack?.("signup_field_focus", { field: "contact" })}
             className={`mt-2 min-h-[44px] w-full rounded-lg border px-3 py-3 pr-10 text-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:shadow-sm ${
               errors.contact
                 ? "border-red-400 animate-shake"
@@ -222,9 +222,7 @@ export function SignupForm({
             aria-invalid={Boolean(errors.contact)}
             aria-describedby={errors.contact ? "contact-error" : "contact-helper"}
             disabled={isDisabled}
-            {...register("contact", {
-              onFocus: () => onTrack?.("signup_field_focus", { field: "contact" }),
-            })}
+            {...register("contact")}
           />
           <CheckCircle2
             className={cn(
@@ -251,15 +249,14 @@ export function SignupForm({
             placeholder="Расскажите в свободной форме..."
             rows={4}
             maxLength={500}
+            onFocus={() => onTrack?.("signup_field_focus", { field: "motivation" })}
             className={`mt-2 min-h-[120px] w-full rounded-lg border px-3 py-3 text-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:shadow-sm ${
               errors.motivation ? "border-red-400 animate-shake" : "border-primary-100"
             }`}
             aria-invalid={Boolean(errors.motivation)}
             aria-describedby={errors.motivation ? "motivation-error" : "motivation-helper"}
             disabled={isDisabled}
-            {...register("motivation", {
-              onFocus: () => onTrack?.("signup_field_focus", { field: "motivation" }),
-            })}
+            {...register("motivation")}
           />
           <div className="mt-1 flex items-center justify-between text-xs text-text/60">
             <span id="motivation-helper">До 500 символов</span>
@@ -287,15 +284,14 @@ export function SignupForm({
                 placeholder="Расскажите в свободной форме..."
                 rows={4}
                 maxLength={500}
-            className={`mt-2 min-h-[120px] w-full rounded-lg border px-3 py-3 text-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:shadow-sm ${
+                onFocus={() => onTrack?.("signup_field_focus", { field: "motivation" })}
+                className={`mt-2 min-h-[120px] w-full rounded-lg border px-3 py-3 text-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:shadow-sm ${
                   errors.motivation ? "border-red-400 animate-shake" : "border-primary-100"
                 }`}
                 aria-invalid={Boolean(errors.motivation)}
                 aria-describedby={errors.motivation ? "motivation-error" : "motivation-helper"}
                 disabled={isDisabled}
-                {...register("motivation", {
-                  onFocus: () => onTrack?.("signup_field_focus", { field: "motivation" }),
-                })}
+                {...register("motivation")}
               />
               <div className="mt-1 flex items-center justify-between text-xs text-text/60">
                 <span id="motivation-helper">До 500 символов</span>
@@ -348,15 +344,14 @@ export function SignupForm({
       <label className="block text-sm font-medium text-text">
         Как узнали о нас?
         <select
+          onFocus={() => onTrack?.("signup_field_focus", { field: "referral" })}
           className={`mt-2 min-h-[44px] w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
             errors.referral ? "border-red-400" : "border-primary-100"
           }`}
           aria-invalid={Boolean(errors.referral)}
           aria-describedby={errors.referral ? "referral-error" : undefined}
           disabled={isDisabled}
-          {...register("referral", {
-            onFocus: () => onTrack?.("signup_field_focus", { field: "referral" }),
-          })}
+          {...register("referral")}
         >
           <option value="">Выберите вариант</option>
           {referralOptions.map((option) => (
