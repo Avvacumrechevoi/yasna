@@ -8,6 +8,7 @@ import { DirectionCard } from "@/components/directions/DirectionCard";
 import { Button } from "@/components/ui/button";
 import { useSignupModal } from "@/components/forms/SignupModal";
 import { cn } from "@/lib/utils";
+import { cardVariants, staggerChildren } from "@/lib/animation-variants";
 import {
   directionFilters,
   directionsData,
@@ -46,21 +47,6 @@ export function DirectionsSection() {
     }
   }, [shouldReduceMotion]);
 
-  const gridVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.08,
-      },
-    },
-  };
-
-  const cardVariants = {
-    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { opacity: 0, y: shouldReduceMotion ? 0 : 16 },
-  };
-
   return (
     <section id="directions" className="px-4 py-20 md:px-8">
       <div className="mx-auto flex max-w-[1280px] flex-col gap-10">
@@ -77,7 +63,7 @@ export function DirectionsSection() {
           <button
             type="button"
             onClick={() => setIsFiltersOpen(true)}
-            className="min-h-[44px] rounded-full border border-primary-100 bg-white px-4 text-sm font-medium text-text"
+            className="min-h-[44px] rounded-full border border-primary-100 bg-white px-4 text-sm font-medium text-text transition-transform hover:scale-[1.02] active:scale-95"
           >
             Фильтры: {activeFilterLabel}
           </button>
@@ -92,7 +78,7 @@ export function DirectionsSection() {
               aria-selected={activeFilter === filter.id}
               onClick={() => setActiveFilter(filter.id)}
               className={cn(
-                "min-h-[44px] rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                "min-h-[44px] rounded-full px-4 py-2 text-sm font-medium transition-colors transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 hover:scale-[1.02] active:scale-95",
                 activeFilter === filter.id
                   ? "bg-primary text-white"
                   : "bg-primary-50 text-text/70 hover:bg-primary-100"
@@ -142,7 +128,7 @@ export function DirectionsSection() {
                       type="button"
                       onClick={() => setActiveFilter(filter.id)}
                       className={cn(
-                        "min-h-[44px] rounded-full px-4 text-sm font-medium transition-colors",
+                        "min-h-[44px] rounded-full px-4 text-sm font-medium transition-colors transition-transform hover:scale-[1.02] active:scale-95",
                         activeFilter === filter.id
                           ? "bg-primary text-white"
                           : "bg-primary-50 text-text/70"
@@ -169,15 +155,16 @@ export function DirectionsSection() {
 
         <motion.div
           initial={shouldReduceMotion ? false : "hidden"}
-          animate="visible"
-          variants={gridVariants}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={staggerChildren(shouldReduceMotion)}
           className="grid gap-8 md:grid-cols-2"
         >
           <AnimatePresence mode="popLayout">
             {filteredDirections.map((direction) => (
               <motion.div
                 key={`${activeFilter}-${direction.id}`}
-                variants={cardVariants}
+                variants={cardVariants(shouldReduceMotion)}
                 layout
               >
                 <DirectionCard

@@ -30,9 +30,10 @@ export function TestimonialCard({
 
   return (
     <motion.article
-      className="flex h-full cursor-pointer flex-col gap-5 rounded-xl border border-primary-100 bg-white p-6 shadow-sm transition-shadow hover:-translate-y-1 hover:shadow-lg"
+      className="flex h-full cursor-pointer flex-col gap-5 rounded-xl border border-primary-100 bg-white p-6 shadow-sm transition-shadow hover:-translate-y-2 hover:border-primary-200 hover:shadow-xl"
       style={{ borderLeft: `4px solid ${testimonial.directionColor}` }}
       whileHover={{ scale: 1.01 }}
+      whileTap={{ scale: 0.98 }}
       onClick={() => onOpen(testimonial)}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
@@ -67,7 +68,8 @@ export function TestimonialCard({
             }}
             className={cn(
               "mt-2 inline-flex items-center rounded-full px-3 py-1 text-xs font-medium",
-              "transition-colors hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
+              "transition-colors transition-transform hover:opacity-90 hover:scale-[1.03] active:scale-95",
+              "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40"
             )}
             style={{
               backgroundColor: `${testimonial.directionColor}1A`,

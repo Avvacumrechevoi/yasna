@@ -1,10 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { ChevronDown } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { animationDurations, animationEasings } from "@/lib/animation-config";
+import { listItemVariants, staggerChildren } from "@/lib/animation-variants";
 
 export type AccordionItem = {
   id: string;
@@ -19,20 +21,6 @@ type AccordionProps = {
   className?: string;
 };
 
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
-
-const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
-};
-
 export function Accordion({
   items,
   allowMultiple = false,
@@ -40,6 +28,7 @@ export function Accordion({
   className,
 }: AccordionProps) {
   const [openIds, setOpenIds] = React.useState<string[]>(defaultOpenIds);
+  const shouldReduceMotion = useReducedMotion();
 
   const toggleItem = (id: string) => {
     setOpenIds((current) => {
@@ -56,7 +45,7 @@ export function Accordion({
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
-      variants={containerVariants}
+      variants={staggerChildren(shouldReduceMotion)}
       className={cn("overflow-hidden rounded-2xl border border-primary-100", className)}
     >
       {items.map((item, index) => {
@@ -65,7 +54,7 @@ export function Accordion({
         return (
           <motion.div
             key={item.id}
-            variants={itemVariants}
+            variants={listItemVariants(shouldReduceMotion)}
             className={cn(
               "border-b border-primary-100 last:border-b-0",
               isOdd ? "bg-primary-50/60" : "bg-white"
@@ -101,7 +90,21 @@ export function Accordion({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: "auto", opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  transition={
+                    shouldReduceMotion
+                      ? { duration: 0 }
+                      : {
+                          height: {
+                            duration: animationDurations.slow,
+                            ease: animationEasings.easeOut,
+                          },
+                          opacity: {
+                            duration: animationDurations.normal,
+                            delay: 0.1,
+                            ease: animationEasings.easeOut,
+                          },
+                        }
+                  }
                   className="overflow-hidden"
                 >
                   <div className="px-6 pb-6 text-base leading-relaxed text-text/70">

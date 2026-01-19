@@ -187,7 +187,7 @@ export function Footer() {
                     rel="noreferrer"
                     className={cn(
                       "flex h-10 w-10 items-center justify-center rounded-full text-white transition-transform",
-                      "hover:-translate-y-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50",
+                      "hover:-translate-y-1 hover:scale-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/50",
                       social.color
                     )}
                     aria-label={social.label}

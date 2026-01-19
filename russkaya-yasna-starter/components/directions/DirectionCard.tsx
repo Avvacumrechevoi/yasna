@@ -132,9 +132,10 @@ export function DirectionCard({
       whileInView="visible"
       viewport={{ once: true, amount: 0.2 }}
       variants={containerVariants}
-      whileHover={shouldReduceMotion ? undefined : { scale: 1.02 }}
+      whileHover={shouldReduceMotion ? undefined : { y: -8 }}
+      whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
       className={cn(
-        "relative flex flex-col gap-6 rounded-2xl border border-primary-100 bg-white shadow-sm transition-shadow hover:shadow-lg",
+        "relative flex flex-col gap-6 rounded-2xl border border-primary-100 bg-white shadow-sm transition-shadow hover:border-primary-200 hover:shadow-xl",
         isCompact ? "p-6" : "p-8",
         className
       )}

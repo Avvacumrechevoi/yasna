@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { CheckCircle2, Globe, MessageCircle, Send } from "lucide-react";
+import Confetti from "react-confetti";
 
 import { Button } from "@/components/ui/button";
 
@@ -10,37 +11,32 @@ type FormSuccessProps = {
   onClose: () => void;
 };
 
-const confettiPieces = [
-  { left: "10%", delay: 0.1, color: "#C8A882" },
-  { left: "25%", delay: 0.2, color: "#4169E1" },
-  { left: "40%", delay: 0.05, color: "#2B4570" },
-  { left: "55%", delay: 0.3, color: "#C8A882" },
-  { left: "70%", delay: 0.15, color: "#4169E1" },
-  { left: "85%", delay: 0.25, color: "#2B4570" },
-];
-
 export function FormSuccess({ onClose }: FormSuccessProps) {
+  const shouldReduceMotion = useReducedMotion();
+  const [size, setSize] = React.useState({ width: 0, height: 0 });
+
+  React.useEffect(() => {
+    const update = () => {
+      setSize({ width: window.innerWidth, height: window.innerHeight });
+    };
+    update();
+    window.addEventListener("resize", update);
+    return () => window.removeEventListener("resize", update);
+  }, []);
+
   return (
     <div className="relative overflow-hidden rounded-2xl bg-white p-6 text-center shadow-sm">
-      <div className="pointer-events-none absolute inset-0">
-        {confettiPieces.map((piece, index) => (
-          <motion.span
-            key={`${piece.left}-${index}`}
-            className="absolute top-0 h-3 w-3 rounded-full"
-            style={{ left: piece.left, backgroundColor: piece.color }}
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 120, rotate: 180 }}
-            transition={{
-              duration: 2.4,
-              delay: piece.delay,
-              ease: "easeOut",
-              repeat: Infinity,
-              repeatDelay: 1.8,
-            }}
-            aria-hidden="true"
+      {!shouldReduceMotion && size.width > 0 ? (
+        <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+          <Confetti
+            width={size.width}
+            height={size.height}
+            numberOfPieces={140}
+            gravity={0.25}
+            recycle={false}
           />
-        ))}
-      </div>
+        </div>
+      ) : null}
 
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}

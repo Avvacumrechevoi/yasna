@@ -12,13 +12,13 @@ import { WhoIsThisForSection } from "@/components/sections/WhoIsThisFor";
 const TestimonialsSection = dynamic(
   () =>
     import("@/components/sections/Testimonials").then((mod) => mod.TestimonialsSection),
-  { ssr: false, loading: () => <div className="h-24" aria-hidden="true" /> }
+  { ssr: false, loading: () => <div className="h-24 rounded-2xl skeleton" aria-hidden="true" /> }
 );
 
 const EventsCalendarSection = dynamic(
   () =>
     import("@/components/sections/EventsCalendar").then((mod) => mod.EventsCalendarSection),
-  { ssr: false, loading: () => <div className="h-24" aria-hidden="true" /> }
+  { ssr: false, loading: () => <div className="h-24 rounded-2xl skeleton" aria-hidden="true" /> }
 );
 
 export default function Home() {

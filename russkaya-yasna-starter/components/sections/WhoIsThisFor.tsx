@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { cardVariants, staggerChildren } from "@/lib/animation-variants";
 
 type Persona = {
   icon: string;
@@ -65,20 +66,6 @@ const tagAnchors: Record<string, string> = {
   "Все направления": "directions",
 };
 
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.12,
-    },
-  },
-};
-
-const cardVariants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-};
-
 export function WhoIsThisForSection() {
   const shouldReduceMotion = useReducedMotion();
 
@@ -108,15 +95,16 @@ export function WhoIsThisForSection() {
 
         <motion.div
           initial={shouldReduceMotion ? false : "hidden"}
-          animate="visible"
-          variants={containerVariants}
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={staggerChildren(shouldReduceMotion)}
           className="grid gap-6 md:grid-cols-2 xl:grid-cols-3"
         >
           {personas.map((persona) => (
             <motion.article
               key={persona.headline}
-              variants={shouldReduceMotion ? undefined : cardVariants}
-              className="flex h-full flex-col gap-4 rounded-xl bg-white p-8 shadow-sm transition-transform duration-200 hover:-translate-y-1 hover:shadow-lg"
+              variants={cardVariants(shouldReduceMotion)}
+              className="flex h-full flex-col gap-4 rounded-xl bg-white p-8 shadow-sm transition-transform duration-200 hover:-translate-y-2 hover:shadow-xl active:scale-[0.98]"
             >
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-secondary-100 via-secondary-200 to-accent-100 text-3xl">
                 <span aria-hidden="true">{persona.icon}</span>

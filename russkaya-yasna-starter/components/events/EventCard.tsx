@@ -58,7 +58,7 @@ export function EventCard({ event, onOpen, onDirectionClick, onTagClick }: Event
 
   return (
     <article
-      className="flex h-full cursor-pointer flex-col gap-4 rounded-2xl border border-primary-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+      className="flex h-full cursor-pointer flex-col gap-4 rounded-2xl border border-primary-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-2 hover:border-primary-200 hover:shadow-xl active:scale-[0.98]"
       onClick={() => onOpen(event)}
       onKeyDown={(eventKey) => {
         if (eventKey.key === "Enter" || eventKey.key === " ") {
@@ -94,7 +94,7 @@ export function EventCard({ event, onOpen, onDirectionClick, onTagClick }: Event
             eventClick.stopPropagation();
             onDirectionClick?.(event.direction);
           }}
-          className="inline-flex rounded-full px-3 py-1 text-xs font-medium"
+          className="inline-flex rounded-full px-3 py-1 text-xs font-medium transition-transform hover:scale-[1.03] active:scale-95"
           style={{
             backgroundColor: `${event.directionColor}1A`,
             color: event.directionColor,
@@ -133,7 +133,7 @@ export function EventCard({ event, onOpen, onDirectionClick, onTagClick }: Event
                 eventClick.stopPropagation();
                 onTagClick?.(tag);
               }}
-              className="rounded-full bg-primary-50 px-3 py-1 text-xs text-text/60 hover:bg-primary-100"
+              className="rounded-full bg-primary-50 px-3 py-1 text-xs text-text/60 transition-transform hover:bg-primary-100 hover:scale-[1.03] active:scale-95"
             >
               {tag}
             </button>

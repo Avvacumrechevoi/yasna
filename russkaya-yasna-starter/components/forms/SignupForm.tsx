@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const contactRegex =
   /^(?:\+?\d[\d\s()\-]{6,}|@[a-zA-Z0-9_]{3,}|https?:\/\/t\.me\/[a-zA-Z0-9_]{3,}|[^\s@]+@[^\s@]+\.[^\s@]+)$/;
@@ -89,7 +90,7 @@ export function SignupForm({
     setFocus,
     reset,
     control,
-    formState: { errors, isValid, isSubmitting },
+    formState: { errors, isValid, isSubmitting, touchedFields },
   } = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     mode: "onBlur",
@@ -149,6 +150,8 @@ export function SignupForm({
   };
 
   const isDisabled = isSubmitting || submitState === "loading";
+  const isNameValid = Boolean(touchedFields.name && !errors.name);
+  const isContactValid = Boolean(touchedFields.contact && !errors.contact);
 
   return (
     <form className="space-y-5" onSubmit={handleSubmit(onSubmit)}>
@@ -167,22 +170,35 @@ export function SignupForm({
 
       <label className="block text-sm font-medium text-text">
         Имя
-        <input
-          type="text"
-          placeholder="Как к вам обращаться?"
-          autoComplete="name"
-          className={`mt-2 min-h-[44px] w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-            errors.name ? "border-red-400" : "border-primary-100"
-          }`}
-          aria-invalid={Boolean(errors.name)}
-          aria-describedby={errors.name ? "name-error" : undefined}
-          disabled={isDisabled}
-          {...register("name", {
-            onFocus: () => onTrack?.("signup_field_focus", { field: "name" }),
-          })}
-        />
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Как к вам обращаться?"
+            autoComplete="name"
+            className={`mt-2 min-h-[44px] w-full rounded-lg border px-3 py-3 pr-10 text-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:shadow-sm ${
+              errors.name
+                ? "border-red-400 animate-shake"
+                : isNameValid
+                ? "border-emerald-400"
+                : "border-primary-100"
+            }`}
+            aria-invalid={Boolean(errors.name)}
+            aria-describedby={errors.name ? "name-error" : undefined}
+            disabled={isDisabled}
+            {...register("name", {
+              onFocus: () => onTrack?.("signup_field_focus", { field: "name" }),
+            })}
+          />
+          <CheckCircle2
+            className={cn(
+              "pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500 transition-opacity",
+              isNameValid ? "opacity-100" : "opacity-0"
+            )}
+            aria-hidden="true"
+          />
+        </div>
         {errors.name ? (
-          <p id="name-error" className="mt-1 text-xs text-red-500">
+          <p id="name-error" className="mt-1 text-xs text-red-500 animate-slide-down">
             {errors.name.message}
           </p>
         ) : null}
@@ -190,26 +206,39 @@ export function SignupForm({
 
       <label className="block text-sm font-medium text-text">
         Контакт
-        <input
-          type="text"
-          inputMode="email"
-          autoComplete="email"
-          placeholder="Telegram, WhatsApp или Email"
-          className={`mt-2 min-h-[44px] w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-            errors.contact ? "border-red-400" : "border-primary-100"
-          }`}
-          aria-invalid={Boolean(errors.contact)}
-          aria-describedby={errors.contact ? "contact-error" : "contact-helper"}
-          disabled={isDisabled}
-          {...register("contact", {
-            onFocus: () => onTrack?.("signup_field_focus", { field: "contact" }),
-          })}
-        />
+        <div className="relative">
+          <input
+            type="text"
+            inputMode="email"
+            autoComplete="email"
+            placeholder="Telegram, WhatsApp или Email"
+            className={`mt-2 min-h-[44px] w-full rounded-lg border px-3 py-3 pr-10 text-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:shadow-sm ${
+              errors.contact
+                ? "border-red-400 animate-shake"
+                : isContactValid
+                ? "border-emerald-400"
+                : "border-primary-100"
+            }`}
+            aria-invalid={Boolean(errors.contact)}
+            aria-describedby={errors.contact ? "contact-error" : "contact-helper"}
+            disabled={isDisabled}
+            {...register("contact", {
+              onFocus: () => onTrack?.("signup_field_focus", { field: "contact" }),
+            })}
+          />
+          <CheckCircle2
+            className={cn(
+              "pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-emerald-500 transition-opacity",
+              isContactValid ? "opacity-100" : "opacity-0"
+            )}
+            aria-hidden="true"
+          />
+        </div>
         <p id="contact-helper" className="mt-1 text-xs text-text/60">
           Выберите удобный способ связи
         </p>
         {errors.contact ? (
-          <p id="contact-error" className="mt-1 text-xs text-red-500">
+          <p id="contact-error" className="mt-1 text-xs text-red-500 animate-slide-down">
             {errors.contact.message}
           </p>
         ) : null}
@@ -222,8 +251,8 @@ export function SignupForm({
             placeholder="Расскажите в свободной форме..."
             rows={4}
             maxLength={500}
-            className={`mt-2 min-h-[120px] w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-              errors.motivation ? "border-red-400" : "border-primary-100"
+            className={`mt-2 min-h-[120px] w-full rounded-lg border px-3 py-3 text-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:shadow-sm ${
+              errors.motivation ? "border-red-400 animate-shake" : "border-primary-100"
             }`}
             aria-invalid={Boolean(errors.motivation)}
             aria-describedby={errors.motivation ? "motivation-error" : "motivation-helper"}
@@ -237,7 +266,7 @@ export function SignupForm({
             <span>{motivation.length} / 500</span>
           </div>
           {errors.motivation ? (
-            <p id="motivation-error" className="mt-1 text-xs text-red-500">
+            <p id="motivation-error" className="mt-1 text-xs text-red-500 animate-slide-down">
               {errors.motivation.message}
             </p>
           ) : null}
@@ -258,8 +287,8 @@ export function SignupForm({
                 placeholder="Расскажите в свободной форме..."
                 rows={4}
                 maxLength={500}
-                className={`mt-2 min-h-[120px] w-full rounded-lg border px-3 py-3 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 ${
-                  errors.motivation ? "border-red-400" : "border-primary-100"
+            className={`mt-2 min-h-[120px] w-full rounded-lg border px-3 py-3 text-sm transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:shadow-sm ${
+                  errors.motivation ? "border-red-400 animate-shake" : "border-primary-100"
                 }`}
                 aria-invalid={Boolean(errors.motivation)}
                 aria-describedby={errors.motivation ? "motivation-error" : "motivation-helper"}
@@ -273,7 +302,7 @@ export function SignupForm({
                 <span>{motivation.length} / 500</span>
               </div>
               {errors.motivation ? (
-                <p id="motivation-error" className="mt-1 text-xs text-red-500">
+                <p id="motivation-error" className="mt-1 text-xs text-red-500 animate-slide-down">
                   {errors.motivation.message}
                 </p>
               ) : null}

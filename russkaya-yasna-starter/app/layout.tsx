@@ -3,6 +3,7 @@ import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/react";
 import { SignupModalProvider } from "@/components/forms/SignupModal";
+import { PageTransition } from "@/components/layout/PageTransition";
 
 const inter = Inter({ 
   subsets: ["latin", "cyrillic"],
@@ -62,7 +63,7 @@ export default function RootLayout({
     <html lang="ru" className={`${inter.variable} ${playfair.variable}`}>
       <body className={`${inter.className} antialiased bg-background text-text`}>
         <SignupModalProvider>
-          {children}
+          <PageTransition>{children}</PageTransition>
           <Analytics />
         </SignupModalProvider>
       </body>

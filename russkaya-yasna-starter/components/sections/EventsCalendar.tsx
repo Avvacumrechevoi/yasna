@@ -16,7 +16,7 @@ import {
   startOfWeek,
 } from "date-fns";
 import { ru } from "date-fns/locale";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   CalendarDays,
   ChevronLeft,
@@ -32,6 +32,7 @@ import { EventCard } from "@/components/events/EventCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { eventsData, type EventItem, type EventTag } from "@/lib/events-data";
+import { slideInRight, staggerChildren } from "@/lib/animation-variants";
 
 type TimeFilter = "all" | "week" | "month";
 
@@ -51,6 +52,7 @@ const formatEventDate = (date: string) =>
   format(parseISO(date), "d MMMM", { locale: ru });
 
 export function EventsCalendarSection() {
+  const shouldReduceMotion = useReducedMotion();
   const [activeTime, setActiveTime] = React.useState<TimeFilter>("all");
   const [activeDirection, setActiveDirection] = React.useState("Все");
   const [activeLocation, setActiveLocation] = React.useState("Все");
@@ -117,6 +119,8 @@ export function EventsCalendarSection() {
       return acc;
     }, {});
   }, []);
+
+  const monthKey = format(monthCursor, "yyyy-MM");
 
   const activeFilterCount = React.useMemo(() => {
     let count = 0;
@@ -240,7 +244,7 @@ export function EventsCalendarSection() {
                 type="button"
                 onClick={() => setActiveTime(filter.id)}
                 className={cn(
-                  "min-h-[44px] rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                  "min-h-[44px] rounded-full px-4 py-2 text-sm font-medium transition-colors transition-transform hover:scale-[1.02] active:scale-95",
                   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
                   activeTime === filter.id
                     ? "bg-primary text-white"
@@ -264,7 +268,7 @@ export function EventsCalendarSection() {
                   type="button"
                   onClick={() => setActiveDirection(direction)}
                   className={cn(
-                    "min-h-[44px] rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                    "min-h-[44px] rounded-full px-3 py-1.5 text-xs font-medium transition-colors transition-transform hover:scale-[1.02] active:scale-95",
                     activeDirection === direction
                       ? "bg-secondary text-white"
                       : "bg-secondary-50 text-text/70 hover:bg-secondary-100"
@@ -307,7 +311,7 @@ export function EventsCalendarSection() {
                 type="button"
                 onClick={() => setViewMode("list")}
                 className={cn(
-                  "rounded-full px-3 py-1.5",
+                  "rounded-full px-3 py-1.5 transition-transform hover:scale-[1.02] active:scale-95",
                   viewMode === "list" ? "bg-primary text-white" : "text-text/60"
                 )}
               >
@@ -317,7 +321,7 @@ export function EventsCalendarSection() {
                 type="button"
                 onClick={() => setViewMode("calendar")}
                 className={cn(
-                  "rounded-full px-3 py-1.5",
+                  "rounded-full px-3 py-1.5 transition-transform hover:scale-[1.02] active:scale-95",
                   viewMode === "calendar" ? "bg-primary text-white" : "text-text/60"
                 )}
               >
@@ -332,7 +336,7 @@ export function EventsCalendarSection() {
                 type="button"
                 onClick={() => setViewMode("list")}
                 className={cn(
-                  "rounded-full px-3 py-1.5",
+                  "rounded-full px-3 py-1.5 transition-transform hover:scale-[1.02] active:scale-95",
                   viewMode === "list" ? "bg-primary text-white" : "text-text/60"
                 )}
               >
@@ -342,7 +346,7 @@ export function EventsCalendarSection() {
                 type="button"
                 onClick={() => setViewMode("calendar")}
                 className={cn(
-                  "rounded-full px-3 py-1.5",
+                  "rounded-full px-3 py-1.5 transition-transform hover:scale-[1.02] active:scale-95",
                   viewMode === "calendar" ? "bg-primary text-white" : "text-text/60"
                 )}
               >
@@ -487,19 +491,21 @@ export function EventsCalendarSection() {
           <>
             {filteredEvents.length ? (
               <motion.div
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={shouldReduceMotion ? false : "hidden"}
+                whileInView="visible"
+                viewport={{ once: true, amount: 0.2 }}
+                variants={staggerChildren(shouldReduceMotion)}
                 className="grid gap-8 md:grid-cols-2 xl:grid-cols-3"
               >
                 {visibleEvents.map((event) => (
-                  <EventCard
-                    key={event.id}
-                    event={event}
-                    onOpen={handleEventOpen}
-                    onDirectionClick={(direction) => setActiveDirection(direction)}
-                    onTagClick={(tag) => setActiveTag(tag as EventTag)}
-                  />
+                  <motion.div key={event.id} variants={slideInRight({ reduceMotion: shouldReduceMotion })}>
+                    <EventCard
+                      event={event}
+                      onOpen={handleEventOpen}
+                      onDirectionClick={(direction) => setActiveDirection(direction)}
+                      onTagClick={(tag) => setActiveTag(tag as EventTag)}
+                    />
+                  </motion.div>
                 ))}
               </motion.div>
             ) : (
@@ -518,7 +524,14 @@ export function EventsCalendarSection() {
           </>
         ) : (
           <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
-            <div className="rounded-2xl border border-primary-100 bg-white p-6">
+            <motion.div
+              key={monthKey}
+              initial={{ opacity: 0, x: shouldReduceMotion ? 0 : 16 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: shouldReduceMotion ? 0 : -16 }}
+              transition={{ duration: shouldReduceMotion ? 0 : 0.3, ease: "easeOut" }}
+              className="rounded-2xl border border-primary-100 bg-white p-6"
+            >
               <div className="flex items-center justify-between">
                 <button
                   type="button"
@@ -561,7 +574,7 @@ export function EventsCalendarSection() {
                       type="button"
                       onClick={() => setSelectedDate(day)}
                       className={cn(
-                        "flex h-14 flex-col items-center justify-center rounded-lg border text-xs transition-colors",
+                        "ripple-center flex h-14 flex-col items-center justify-center rounded-lg border text-xs transition-colors transition-transform active:scale-95",
                         isCurrentMonth ? "border-primary-100 bg-white" : "border-transparent bg-primary-50/60 text-text/40",
                         isToday ? "border-primary text-primary" : "",
                         selectedDate && isSameDay(day, selectedDate) ? "bg-primary-50" : ""
@@ -582,7 +595,7 @@ export function EventsCalendarSection() {
                   );
                 })}
               </div>
-            </div>
+            </motion.div>
 
             <div className="rounded-2xl border border-primary-100 bg-white p-6">
               <div className="flex items-center gap-2 text-sm font-semibold text-text">
@@ -590,26 +603,37 @@ export function EventsCalendarSection() {
                 {selectedDate ? format(selectedDate, "d MMMM", { locale: ru }) : "Выберите дату"}
               </div>
               <div className="mt-4 space-y-4">
-                {dayEvents.length ? (
-                  dayEvents.map((event) => (
-                    <button
-                      key={event.id}
-                      type="button"
-                      onClick={() => handleEventOpen(event)}
-                      className="min-h-[44px] w-full rounded-xl border border-primary-100 px-4 py-3 text-left text-sm transition-colors hover:bg-primary-50"
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-semibold text-text">{event.title}</span>
-                        <span className="text-xs text-text/60">{event.time}</span>
-                      </div>
-                      <p className="mt-1 text-xs text-text/60">{event.location}</p>
-                    </button>
-                  ))
-                ) : (
-                  <p className="text-sm text-text/60">
-                    На выбранную дату событий нет.
-                  </p>
-                )}
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={selectedDate ? format(selectedDate, "yyyy-MM-dd") : "empty"}
+                    initial={{ opacity: 0, x: shouldReduceMotion ? 0 : 12 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: shouldReduceMotion ? 0 : -12 }}
+                    transition={{ duration: shouldReduceMotion ? 0 : 0.25, ease: "easeOut" }}
+                    className="space-y-4"
+                  >
+                    {dayEvents.length ? (
+                      dayEvents.map((event) => (
+                        <button
+                          key={event.id}
+                          type="button"
+                          onClick={() => handleEventOpen(event)}
+                          className="min-h-[44px] w-full rounded-xl border border-primary-100 px-4 py-3 text-left text-sm transition-colors hover:bg-primary-50"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="font-semibold text-text">{event.title}</span>
+                            <span className="text-xs text-text/60">{event.time}</span>
+                          </div>
+                          <p className="mt-1 text-xs text-text/60">{event.location}</p>
+                        </button>
+                      ))
+                    ) : (
+                      <p className="text-sm text-text/60">
+                        На выбранную дату событий нет.
+                      </p>
+                    )}
+                  </motion.div>
+                </AnimatePresence>
               </div>
             </div>
           </div>

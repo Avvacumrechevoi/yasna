@@ -106,7 +106,7 @@ export function HeroSection() {
   return (
     <section
       id="about"
-      className="relative overflow-hidden bg-gradient-to-b from-white via-[#F4F7FD] to-background"
+      className="relative overflow-hidden bg-gradient-to-b from-white via-[#F4F7FD] to-background animate-gradient"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-32 top-10 h-72 w-72 rounded-full bg-accent-100/40 blur-3xl" />

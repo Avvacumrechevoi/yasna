@@ -1,11 +1,12 @@
 "use client";
 
 import * as React from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import { Autoplay, EffectFade, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 import "swiper/css";
+import "swiper/css/effect-fade";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 
@@ -13,6 +14,7 @@ import { TestimonialCard } from "@/components/testimonials/TestimonialCard";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { testimonialsData, type Testimonial } from "@/lib/testimonials-data";
+import { fadeInUp, staggerChildren } from "@/lib/animation-variants";
 
 type FilterOption = {
   id: string;
@@ -34,6 +36,7 @@ const quoteModalVariants = {
 };
 
 export function TestimonialsSection() {
+  const shouldReduceMotion = useReducedMotion();
   const [activeFilter, setActiveFilter] = React.useState("all");
   const [selectedTestimonial, setSelectedTestimonial] = React.useState<Testimonial | null>(null);
   const [isFormOpen, setIsFormOpen] = React.useState(false);
@@ -146,9 +149,12 @@ export function TestimonialsSection() {
 
         <div className="md:hidden">
           <Swiper
-            modules={[Navigation, Pagination, Autoplay]}
+            modules={[Navigation, Pagination, Autoplay, EffectFade]}
             slidesPerView={1}
             spaceBetween={24}
+            effect="fade"
+            fadeEffect={{ crossFade: true }}
+            speed={400}
             pagination={{ clickable: true }}
             navigation
             grabCursor
@@ -170,19 +176,20 @@ export function TestimonialsSection() {
         <AnimatePresence mode="wait">
           <motion.div
             key={activeFilter}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.3 }}
+            initial={shouldReduceMotion ? false : "hidden"}
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerChildren(shouldReduceMotion)}
             className="hidden gap-8 md:grid md:grid-cols-2 xl:grid-cols-3"
           >
             {filteredTestimonials.map((testimonial) => (
-              <TestimonialCard
-                key={testimonial.id}
-                testimonial={testimonial}
-                onOpen={setSelectedTestimonial}
-                onDirectionClick={(direction) => setActiveFilter(direction)}
-              />
+              <motion.div key={testimonial.id} variants={fadeInUp({ reduceMotion: shouldReduceMotion })}>
+                <TestimonialCard
+                  testimonial={testimonial}
+                  onOpen={setSelectedTestimonial}
+                  onDirectionClick={(direction) => setActiveFilter(direction)}
+                />
+              </motion.div>
             ))}
           </motion.div>
         </AnimatePresence>
