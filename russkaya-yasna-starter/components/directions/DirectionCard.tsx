@@ -100,6 +100,7 @@ export function DirectionCard({
   onTestimonialClick,
 }: DirectionCardProps) {
   const shouldReduceMotion = useReducedMotion();
+  const enableEntrance = !shouldReduceMotion;
   const isCompact = variant === "compact";
   const isClickable = Boolean(onCardClick);
 
@@ -129,10 +130,10 @@ export function DirectionCard({
   const CardRoot = (
     <motion.article
       id={id}
-      initial={shouldReduceMotion ? false : "hidden"}
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.2 }}
-      variants={containerVariants}
+      initial={false}
+      whileInView={enableEntrance ? "visible" : undefined}
+      viewport={enableEntrance ? { once: true, amount: 0.2 } : undefined}
+      variants={enableEntrance ? containerVariants : undefined}
       whileHover={shouldReduceMotion ? undefined : { y: -8 }}
       whileTap={shouldReduceMotion ? undefined : { scale: 0.98 }}
       className={cn(
@@ -199,16 +200,16 @@ export function DirectionCard({
             <h3 className="text-lg font-semibold text-text">Для кого</h3>
             {forWhom.length ? (
               <motion.ul
-                initial={shouldReduceMotion ? false : "hidden"}
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
-                variants={sectionVariants}
+                initial={false}
+                whileInView={enableEntrance ? "visible" : undefined}
+                viewport={enableEntrance ? { once: true, amount: 0.3 } : undefined}
+                variants={enableEntrance ? sectionVariants : undefined}
                 className="mt-4 space-y-2 text-sm text-text/70"
               >
                 {forWhom.map((point) => (
                   <motion.li
                     key={point}
-                    variants={itemVariants}
+                    variants={enableEntrance ? itemVariants : undefined}
                     className="flex gap-2"
                   >
                     <CheckCircle2
@@ -228,16 +229,16 @@ export function DirectionCard({
             <h3 className="text-lg font-semibold text-text">Что вы будете делать</h3>
             {activities.length ? (
               <motion.ul
-                initial={shouldReduceMotion ? false : "hidden"}
-                whileInView="visible"
-                viewport={{ once: true, amount: 0.3 }}
-                variants={sectionVariants}
+                initial={false}
+                whileInView={enableEntrance ? "visible" : undefined}
+                viewport={enableEntrance ? { once: true, amount: 0.3 } : undefined}
+                variants={enableEntrance ? sectionVariants : undefined}
                 className="mt-4 space-y-2 text-sm text-text/70"
               >
                 {activities.map((activity) => (
                   <motion.li
                     key={activity}
-                    variants={itemVariants}
+                    variants={enableEntrance ? itemVariants : undefined}
                     className="flex gap-2"
                   >
                     <span aria-hidden="true" className="mt-0.5">
