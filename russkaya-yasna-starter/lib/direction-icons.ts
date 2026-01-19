@@ -25,6 +25,8 @@ export const directionIconMap: Record<DirectionIconKey, LucideIcon> = {
   castle: Castle,
 };
 
+export const fallbackDirectionIcon = Map;
+
 export const resourceIconMap: Record<ResourceIconKey, LucideIcon> = {
   telegram: Send,
   site: Globe,
