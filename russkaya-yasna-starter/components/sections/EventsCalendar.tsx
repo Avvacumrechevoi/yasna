@@ -46,7 +46,14 @@ const timeFilters: { id: TimeFilter; label: string }[] = [
 
 const locationOptions = ["Все", "Онлайн", "Москва", "Санкт-Петербург"];
 
-const tagOptions: EventTag[] = ["Бесплатно", "Для новичков", "С детьми", "Платно"];
+const tagOptions: EventTag[] = [
+  "Бесплатно",
+  "Для новичков",
+  "С детьми",
+  "Платно",
+  "Офлайн",
+  "Праздник",
+];
 
 const formatEventDate = (date: string) =>
   format(parseISO(date), "d MMMM", { locale: ru });

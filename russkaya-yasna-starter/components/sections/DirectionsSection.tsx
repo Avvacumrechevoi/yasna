@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useSignupModal } from "@/components/forms/SignupModal";
 import { cn } from "@/lib/utils";
 import { cardVariants, staggerChildren } from "@/lib/animation-variants";
+import { directionIconMap } from "@/lib/direction-icons";
 import {
   directionFilters,
   directionsData,
@@ -161,31 +162,34 @@ export function DirectionsSection() {
           className="grid gap-8 md:grid-cols-2"
         >
           <AnimatePresence mode="popLayout">
-            {filteredDirections.map((direction) => (
-              <motion.div
-                key={`${activeFilter}-${direction.id}`}
-                variants={cardVariants(shouldReduceMotion)}
-                layout
-              >
-                <DirectionCard
-                  id={direction.id}
-                  name={direction.name}
-                  icon={<direction.icon className="h-6 w-6" aria-hidden="true" />}
-                  tagline={direction.tagline}
-                  forWhom={direction.forWhom}
-                  activities={direction.activities}
-                  results={direction.results}
-                  format={direction.format}
-                  resources={direction.resources}
-                  color={direction.color}
-                  variant={isCompact ? "compact" : "expanded"}
-                  className="scroll-mt-28"
-                  onCardClick={() => router.push(direction.href)}
-                  onPrimaryAction={() => openModal(`direction-card:${direction.id}`)}
-                  onSecondaryAction={() => router.push(direction.href)}
-                />
-              </motion.div>
-            ))}
+            {filteredDirections.map((direction) => {
+              const Icon = directionIconMap[direction.icon];
+              return (
+                <motion.div
+                  key={`${activeFilter}-${direction.id}`}
+                  variants={cardVariants(shouldReduceMotion)}
+                  layout
+                >
+                  <DirectionCard
+                    id={direction.id}
+                    name={direction.name}
+                    icon={<Icon className="h-6 w-6" aria-hidden="true" />}
+                    tagline={direction.tagline}
+                    forWhom={direction.forWhom}
+                    activities={direction.activities}
+                    results={direction.results}
+                    format={direction.format}
+                    resources={direction.resources}
+                    color={direction.color}
+                    variant={isCompact ? "compact" : "expanded"}
+                    className="scroll-mt-28"
+                    onCardClick={() => router.push(direction.href)}
+                    onPrimaryAction={() => openModal(`direction-card:${direction.id}`)}
+                    onSecondaryAction={() => router.push(direction.href)}
+                  />
+                </motion.div>
+              );
+            })}
           </AnimatePresence>
         </motion.div>
 

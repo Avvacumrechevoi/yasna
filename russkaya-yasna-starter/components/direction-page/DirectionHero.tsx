@@ -8,6 +8,7 @@ import { ChevronRight, Home } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useSignupModal } from "@/components/forms/SignupModal";
 import type { DirectionData } from "@/lib/directions-data";
+import { directionIconMap } from "@/lib/direction-icons";
 
 type DirectionHeroProps = {
   direction: DirectionData;
@@ -18,6 +19,7 @@ export function DirectionHero({ direction }: DirectionHeroProps) {
   const shouldReduceMotion = useReducedMotion();
   const { scrollY } = useScroll();
   const iconY = useTransform(scrollY, [0, 200], [0, shouldReduceMotion ? 0 : -24]);
+  const Icon = directionIconMap[direction.icon];
 
   return (
     <section
@@ -77,7 +79,7 @@ export function DirectionHero({ direction }: DirectionHeroProps) {
           className="flex h-24 w-24 items-center justify-center rounded-full bg-white/15 text-white shadow-lg md:h-28 md:w-28"
           aria-hidden="true"
         >
-          <direction.icon className="h-10 w-10" />
+          <Icon className="h-10 w-10" />
         </motion.div>
       </div>
     </section>

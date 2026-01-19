@@ -1,12 +1,12 @@
 import { animationDurations, animationEasings, animationStagger } from "@/lib/animation-config";
 
 type MotionPresetOptions = {
-  reduceMotion?: boolean;
+  reduceMotion?: boolean | null;
   delay?: number;
 };
 
 const motionTransition = (
-  reduceMotion: boolean,
+  reduceMotion: boolean | null | undefined,
   duration: number,
   ease: number[] | { type: "spring"; stiffness: number; damping: number },
   delay = 0
@@ -113,18 +113,18 @@ export const scaleIn = ({ reduceMotion, delay = 0 }: MotionPresetOptions = {}) =
   },
 });
 
-export const staggerChildren = (reduceMotion?: boolean, delayChildren = 0) => ({
+export const staggerChildren = (reduceMotion?: boolean | null, delayChildren = 0) => ({
   hidden: {},
   visible: {
     transition: {
-      staggerChildren: reduceMotion ? 0 : animationStagger,
-      delayChildren: reduceMotion ? 0 : delayChildren,
+      staggerChildren: Boolean(reduceMotion) ? 0 : animationStagger,
+      delayChildren: Boolean(reduceMotion) ? 0 : delayChildren,
     },
   },
 });
 
-export const listItemVariants = (reduceMotion?: boolean) => ({
-  hidden: { opacity: 0, y: reduceMotion ? 0 : 10 },
+export const listItemVariants = (reduceMotion?: boolean | null) => ({
+  hidden: { opacity: 0, y: Boolean(reduceMotion) ? 0 : 10 },
   visible: {
     opacity: 1,
     y: 0,
@@ -136,8 +136,8 @@ export const listItemVariants = (reduceMotion?: boolean) => ({
   },
 });
 
-export const cardVariants = (reduceMotion?: boolean) => ({
-  hidden: { opacity: 0, y: reduceMotion ? 0 : 20 },
+export const cardVariants = (reduceMotion?: boolean | null) => ({
+  hidden: { opacity: 0, y: Boolean(reduceMotion) ? 0 : 20 },
   visible: {
     opacity: 1,
     y: 0,
@@ -149,11 +149,11 @@ export const cardVariants = (reduceMotion?: boolean) => ({
   },
 });
 
-export const buttonVariants = (reduceMotion?: boolean) => ({
+export const buttonVariants = (reduceMotion?: boolean | null) => ({
   rest: { scale: 1 },
   hover: {
-    scale: reduceMotion ? 1 : 1.05,
+    scale: Boolean(reduceMotion) ? 1 : 1.05,
     transition: motionTransition(Boolean(reduceMotion), animationDurations.fast, animationEasings.easeOut),
   },
-  tap: { scale: reduceMotion ? 1 : 0.95 },
+  tap: { scale: Boolean(reduceMotion) ? 1 : 0.95 },
 });

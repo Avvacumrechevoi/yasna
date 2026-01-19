@@ -1,17 +1,16 @@
 // Контент направлений. Обновляйте тексты и списки ниже при смене программы.
-import type { LucideIcon } from "lucide-react";
-import {
-  BookOpen,
-  Castle,
-  Globe,
-  Heart,
-  Map,
-  Navigation2,
-  Search,
-  Send,
-  Sparkles,
-  Star,
-} from "lucide-react";
+
+export type DirectionIconKey =
+  | "map"
+  | "book"
+  | "star"
+  | "sparkles"
+  | "heart"
+  | "navigation"
+  | "search"
+  | "castle";
+
+export type ResourceIconKey = "telegram" | "site";
 
 export type DirectionFilter =
   | "all"
@@ -54,7 +53,7 @@ export type DirectionResource = {
   id: string;
   label: string;
   href: string;
-  icon?: LucideIcon;
+  icon?: ResourceIconKey;
 };
 
 export type DirectionTeamMember = {
@@ -91,7 +90,7 @@ export type DirectionData = {
   id: string;
   slug: string;
   name: string;
-  icon: LucideIcon;
+  icon: DirectionIconKey;
   color: string;
   tagline: string;
   stats: DirectionStats;
@@ -154,7 +153,7 @@ export const directionsData: DirectionData[] = [
     id: "direction-neglinka",
     slug: "neglinka",
     name: "Неглинка / 38 Меридиан",
-    icon: Map,
+    icon: "map",
     color: "#2B7A78",
     tagline: "Расшифровываем архитектурные и географические коды Москвы",
     stats: {
@@ -197,13 +196,13 @@ export const directionsData: DirectionData[] = [
         id: "neglinka-telegram",
         label: "Telegram",
         href: "https://t.me/neglinka78",
-        icon: Send,
+        icon: "telegram",
       },
       {
         id: "neglinka-site",
         label: "Сайт",
         href: "https://example.com",
-        icon: Globe,
+        icon: "site",
       },
     ],
     filters: ["all", "moscow", "online"],
@@ -347,7 +346,7 @@ export const directionsData: DirectionData[] = [
     id: "direction-litprosvet",
     slug: "litprosvet",
     name: "ЛитПроСвет",
-    icon: BookOpen,
+    icon: "book",
     color: "#8B4513",
     tagline: "Учимся читать между строк и создавать тексты с глубоким смыслом",
     stats: {
@@ -390,7 +389,7 @@ export const directionsData: DirectionData[] = [
         id: "litprosvet-telegram",
         label: "Telegram",
         href: "https://t.me/russkaya_yasna",
-        icon: Send,
+        icon: "telegram",
       },
     ],
     filters: ["all", "beginner", "online", "moscow"],
@@ -528,7 +527,7 @@ export const directionsData: DirectionData[] = [
     id: "direction-astronevod",
     slug: "astronevod",
     name: "Астроневод",
-    icon: Star,
+    icon: "star",
     color: "#191970",
     tagline: "Исследуем космос и архитектуру через призму русской традиции",
     stats: {
@@ -685,7 +684,7 @@ export const directionsData: DirectionData[] = [
     id: "direction-prazdniki",
     slug: "prazdniki",
     name: "Праздники / Красота",
-    icon: Sparkles,
+    icon: "sparkles",
     color: "#DC143C",
     tagline: "Возвращаем смысл в праздники и создаем настоящие традиции",
     stats: {
@@ -841,7 +840,7 @@ export const directionsData: DirectionData[] = [
     id: "direction-dzhiva",
     slug: "dzhiva",
     name: "Джива",
-    icon: Heart,
+    icon: "heart",
     color: "#E63946",
     tagline: "Изучаем устройство тела через русский язык",
     stats: {
@@ -982,7 +981,7 @@ export const directionsData: DirectionData[] = [
     id: "direction-marshruty",
     slug: "marshruty",
     name: "Ясные маршруты",
-    icon: Navigation2,
+    icon: "navigation",
     color: "#06A77D",
     tagline: "Гуляем по городам с новым пониманием",
     stats: {
@@ -1130,7 +1129,7 @@ export const directionsData: DirectionData[] = [
     id: "direction-izvod",
     slug: "izvod",
     name: "Извод",
-    icon: Search,
+    icon: "search",
     color: "#4A5568",
     tagline: "Исследуем происхождение слов и находим утерянные смыслы",
     stats: {
@@ -1271,7 +1270,7 @@ export const directionsData: DirectionData[] = [
     id: "direction-teremok",
     slug: "teremok",
     name: "Теремок тайн",
-    icon: Castle,
+    icon: "castle",
     color: "#FF6B6B",
     tagline: "Учим детей видеть мир глазами предков",
     stats: {
