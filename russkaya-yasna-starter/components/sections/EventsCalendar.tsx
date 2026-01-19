@@ -1,0 +1,615 @@
+"use client";
+
+import * as React from "react";
+import {
+  addMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameDay,
+  isSameMonth,
+  isWithinInterval,
+  parseISO,
+  startOfMonth,
+  startOfWeek,
+} from "date-fns";
+import { ru } from "date-fns/locale";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  CalendarDays,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Link2,
+  MapPin,
+  Share2,
+  Ticket,
+} from "lucide-react";
+
+import { EventCard } from "@/components/events/EventCard";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import { eventsData, type EventItem, type EventTag } from "@/lib/events-data";
+
+type TimeFilter = "all" | "week" | "month";
+
+type ViewMode = "list" | "calendar";
+
+const timeFilters: { id: TimeFilter; label: string }[] = [
+  { id: "all", label: "Все" },
+  { id: "week", label: "Эта неделя" },
+  { id: "month", label: "Этот месяц" },
+];
+
+const locationOptions = ["Все", "Онлайн", "Москва", "Санкт-Петербург"];
+
+const tagOptions: EventTag[] = ["Бесплатно", "Для новичков", "С детьми", "Платно"];
+
+const formatEventDate = (date: string) =>
+  format(parseISO(date), "d MMMM", { locale: ru });
+
+export function EventsCalendarSection() {
+  const [activeTime, setActiveTime] = React.useState<TimeFilter>("all");
+  const [activeDirection, setActiveDirection] = React.useState("Все");
+  const [activeLocation, setActiveLocation] = React.useState("Все");
+  const [activeTag, setActiveTag] = React.useState<EventTag | "Все">("Все");
+  const [viewMode, setViewMode] = React.useState<ViewMode>("list");
+  const [pageSize, setPageSize] = React.useState(6);
+  const [selectedEvent, setSelectedEvent] = React.useState<EventItem | null>(null);
+  const [selectedDate, setSelectedDate] = React.useState<Date | null>(null);
+  const [monthCursor, setMonthCursor] = React.useState(() => new Date());
+  const [showRegistration, setShowRegistration] = React.useState(false);
+  const [registeredState, setRegisteredState] = React.useState(false);
+
+  const directions = React.useMemo(() => {
+    const unique = Array.from(new Set(eventsData.map((event) => event.direction)));
+    return ["Все", ...unique];
+  }, []);
+
+  const filteredEvents = React.useMemo(() => {
+    const now = new Date();
+    return eventsData.filter((event) => {
+      const eventDate = parseISO(event.date);
+      const inTimeRange =
+        activeTime === "all"
+          ? true
+          : activeTime === "week"
+          ? isWithinInterval(eventDate, {
+              start: startOfWeek(now, { weekStartsOn: 1 }),
+              end: endOfWeek(now, { weekStartsOn: 1 }),
+            })
+          : isWithinInterval(eventDate, {
+              start: startOfMonth(now),
+              end: endOfMonth(now),
+            });
+
+      const inDirection =
+        activeDirection === "Все" ? true : event.direction === activeDirection;
+      const inLocation =
+        activeLocation === "Все"
+          ? true
+          : event.location.toLowerCase().includes(activeLocation.toLowerCase());
+      const inTag = activeTag === "Все" ? true : event.tags.includes(activeTag);
+
+      return inTimeRange && inDirection && inLocation && inTag;
+    });
+  }, [activeDirection, activeLocation, activeTag, activeTime]);
+
+  const visibleEvents = React.useMemo(
+    () => filteredEvents.slice(0, pageSize),
+    [filteredEvents, pageSize]
+  );
+
+  const monthDays = React.useMemo(() => {
+    const start = startOfWeek(startOfMonth(monthCursor), { weekStartsOn: 1 });
+    const end = endOfWeek(endOfMonth(monthCursor), { weekStartsOn: 1 });
+    return eachDayOfInterval({ start, end });
+  }, [monthCursor]);
+
+  const eventsByDate = React.useMemo(() => {
+    return eventsData.reduce<Record<string, EventItem[]>>((acc, event) => {
+      acc[event.date] = acc[event.date] ? [...acc[event.date], event] : [event];
+      return acc;
+    }, {});
+  }, []);
+
+  const dayEvents = React.useMemo(() => {
+    if (!selectedDate) return [];
+    const key = format(selectedDate, "yyyy-MM-dd");
+    return eventsByDate[key] ?? [];
+  }, [eventsByDate, selectedDate]);
+
+  const handleShare = async (link?: string) => {
+    if (!link) return;
+    try {
+      await navigator.clipboard.writeText(link);
+    } catch {
+      window.open(link, "_blank");
+    }
+  };
+
+  const handleEventOpen = (event: EventItem) => {
+    setSelectedEvent(event);
+    setShowRegistration(false);
+    setRegisteredState(false);
+  };
+
+  const handleRegistration = () => {
+    if (selectedEvent?.link) {
+      window.open(selectedEvent.link, "_blank");
+      return;
+    }
+    setShowRegistration(true);
+  };
+
+  const handleRegisterSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setRegisteredState(true);
+  };
+
+  const handleAddToCalendar = (event: EventItem) => {
+    const date = `${event.date.replace(/-/g, "")}T${event.time.replace(":", "")}00`;
+    const ics = [
+      "BEGIN:VCALENDAR",
+      "VERSION:2.0",
+      "BEGIN:VEVENT",
+      `SUMMARY:${event.title}`,
+      `DTSTART:${date}`,
+      `DESCRIPTION:${event.description}`,
+      `LOCATION:${event.location}`,
+      "END:VEVENT",
+      "END:VCALENDAR",
+    ].join("\n");
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = `${event.id}.ics`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
+  return (
+    <section id="events" className="bg-gradient-to-b from-white via-[#F6F8FE] to-background px-4 py-20 md:px-8">
+      <div className="mx-auto flex max-w-[1280px] flex-col gap-10">
+        <div className="text-center">
+          <h2 className="text-3xl font-bold text-primary md:text-4xl">Ближайшие события</h2>
+          <p className="mt-3 text-text/70">Открытые встречи, натурные уроки, праздники</p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center gap-3">
+            {timeFilters.map((filter) => (
+              <button
+                key={filter.id}
+                type="button"
+                onClick={() => setActiveTime(filter.id)}
+                className={cn(
+                  "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+                  "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                  activeTime === filter.id
+                    ? "bg-primary text-white"
+                    : "bg-primary-50 text-text/70 hover:bg-primary-100"
+                )}
+              >
+                {filter.label}
+              </button>
+            ))}
+
+            <div className="ml-auto flex items-center gap-2 text-sm text-text/60">
+              Найдено {filteredEvents.length} событий
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap gap-2">
+              {directions.map((direction) => (
+                <button
+                  key={direction}
+                  type="button"
+                  onClick={() => setActiveDirection(direction)}
+                  className={cn(
+                    "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
+                    activeDirection === direction
+                      ? "bg-secondary text-white"
+                      : "bg-secondary-50 text-text/70 hover:bg-secondary-100"
+                  )}
+                >
+                  {direction}
+                </button>
+              ))}
+            </div>
+
+            <select
+              value={activeLocation}
+              onChange={(event) => setActiveLocation(event.target.value)}
+              className="rounded-full border border-primary-100 bg-white px-4 py-2 text-xs text-text/70"
+              aria-label="Фильтр по локации"
+            >
+              {locationOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={activeTag}
+              onChange={(event) => setActiveTag(event.target.value as EventTag | "Все")}
+              className="rounded-full border border-primary-100 bg-white px-4 py-2 text-xs text-text/70"
+              aria-label="Фильтр по тегу"
+            >
+              <option value="Все">Все теги</option>
+              {tagOptions.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+
+            <div className="ml-auto flex rounded-full border border-primary-100 bg-white p-1 text-xs">
+              <button
+                type="button"
+                onClick={() => setViewMode("list")}
+                className={cn(
+                  "rounded-full px-3 py-1.5",
+                  viewMode === "list" ? "bg-primary text-white" : "text-text/60"
+                )}
+              >
+                Список
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("calendar")}
+                className={cn(
+                  "rounded-full px-3 py-1.5",
+                  viewMode === "calendar" ? "bg-primary text-white" : "text-text/60"
+                )}
+              >
+                Календарь
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {viewMode === "list" ? (
+          <>
+            {filteredEvents.length ? (
+              <motion.div
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="grid gap-8 md:grid-cols-2 xl:grid-cols-3"
+              >
+                {visibleEvents.map((event) => (
+                  <EventCard
+                    key={event.id}
+                    event={event}
+                    onOpen={handleEventOpen}
+                    onDirectionClick={(direction) => setActiveDirection(direction)}
+                    onTagClick={(tag) => setActiveTag(tag as EventTag)}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              <div className="rounded-2xl border border-primary-100 bg-primary-50 px-6 py-10 text-center text-sm text-text/70">
+                В выбранном периоде нет событий. Посмотрите события в других направлениях.
+              </div>
+            )}
+
+            {filteredEvents.length > pageSize ? (
+              <div className="flex justify-center">
+                <Button type="button" variant="secondary" onClick={() => setPageSize((prev) => prev + 6)}>
+                  Загрузить ещё
+                </Button>
+              </div>
+            ) : null}
+          </>
+        ) : (
+          <div className="grid gap-8 lg:grid-cols-[2fr_1fr]">
+            <div className="rounded-2xl border border-primary-100 bg-white p-6">
+              <div className="flex items-center justify-between">
+                <button
+                  type="button"
+                  onClick={() => setMonthCursor((prev) => addMonths(prev, -1))}
+                  className="rounded-full border border-primary-100 p-2 text-text/60 hover:bg-primary-50"
+                  aria-label="Предыдущий месяц"
+                >
+                  <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+                </button>
+                <div className="text-sm font-semibold text-text">
+                  {format(monthCursor, "LLLL yyyy", { locale: ru })}
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMonthCursor((prev) => addMonths(prev, 1))}
+                  className="rounded-full border border-primary-100 p-2 text-text/60 hover:bg-primary-50"
+                  aria-label="Следующий месяц"
+                >
+                  <ChevronRight className="h-4 w-4" aria-hidden="true" />
+                </button>
+              </div>
+
+              <div className="mt-4 grid grid-cols-7 gap-2 text-xs text-text/60">
+                {["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"].map((day) => (
+                  <div key={day} className="text-center">
+                    {day}
+                  </div>
+                ))}
+              </div>
+
+              <div className="mt-2 grid grid-cols-7 gap-2">
+                {monthDays.map((day) => {
+                  const key = format(day, "yyyy-MM-dd");
+                  const events = eventsByDate[key] ?? [];
+                  const isCurrentMonth = isSameMonth(day, monthCursor);
+                  const isToday = isSameDay(day, new Date());
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() => setSelectedDate(day)}
+                      className={cn(
+                        "flex h-14 flex-col items-center justify-center rounded-lg border text-xs transition-colors",
+                        isCurrentMonth ? "border-primary-100 bg-white" : "border-transparent bg-primary-50/60 text-text/40",
+                        isToday ? "border-primary text-primary" : "",
+                        selectedDate && isSameDay(day, selectedDate) ? "bg-primary-50" : ""
+                      )}
+                      aria-label={`Дата ${format(day, "d MMMM", { locale: ru })}`}
+                    >
+                      <span>{format(day, "d")}</span>
+                      <span className="mt-1 flex gap-1">
+                        {events.slice(0, 3).map((eventItem) => (
+                          <span
+                            key={`${key}-${eventItem.id}`}
+                            className="h-1.5 w-1.5 rounded-full"
+                            style={{ backgroundColor: eventItem.directionColor }}
+                          />
+                        ))}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-primary-100 bg-white p-6">
+              <div className="flex items-center gap-2 text-sm font-semibold text-text">
+                <CalendarDays className="h-4 w-4 text-primary" aria-hidden="true" />
+                {selectedDate ? format(selectedDate, "d MMMM", { locale: ru }) : "Выберите дату"}
+              </div>
+              <div className="mt-4 space-y-4">
+                {dayEvents.length ? (
+                  dayEvents.map((event) => (
+                    <button
+                      key={event.id}
+                      type="button"
+                      onClick={() => handleEventOpen(event)}
+                      className="w-full rounded-xl border border-primary-100 px-4 py-3 text-left text-sm transition-colors hover:bg-primary-50"
+                    >
+                      <div className="flex items-center justify-between">
+                        <span className="font-semibold text-text">{event.title}</span>
+                        <span className="text-xs text-text/60">{event.time}</span>
+                      </div>
+                      <p className="mt-1 text-xs text-text/60">{event.location}</p>
+                    </button>
+                  ))
+                ) : (
+                  <p className="text-sm text-text/60">
+                    На выбранную дату событий нет.
+                  </p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        <div className="flex flex-col items-center gap-3 text-center">
+          <Button type="button" variant="secondary" onClick={() => window.open("https://example.com", "_blank")}>
+            Смотреть полное расписание
+          </Button>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {selectedEvent ? (
+          <motion.div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 px-4 py-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedEvent(null)}
+            role="dialog"
+            aria-modal="true"
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.96 }}
+              transition={{ duration: 0.2 }}
+              className="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
+              onClick={(event) => event.stopPropagation()}
+            >
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <span
+                    className="inline-flex rounded-full px-3 py-1 text-xs font-medium"
+                    style={{
+                      backgroundColor: `${selectedEvent.directionColor}1A`,
+                      color: selectedEvent.directionColor,
+                    }}
+                  >
+                    {selectedEvent.direction}
+                  </span>
+                  <h3 className="mt-2 text-2xl font-semibold text-text">{selectedEvent.title}</h3>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedEvent(null)}
+                  className="rounded-full border border-primary-100 px-3 py-1 text-sm text-text/60 hover:bg-primary-50"
+                >
+                  Закрыть
+                </button>
+              </div>
+
+              <div className="mt-4 grid gap-3 text-sm text-text/70 md:grid-cols-2">
+                <div className="flex items-center gap-2">
+                  <CalendarDays className="h-4 w-4 text-accent" aria-hidden="true" />
+                  {formatEventDate(selectedEvent.date)} · {selectedEvent.time}
+                </div>
+                <div className="flex items-center gap-2">
+                  <MapPin className="h-4 w-4 text-accent" aria-hidden="true" />
+                  {selectedEvent.location}
+                </div>
+              </div>
+
+              <p className="mt-4 text-sm text-text/70">{selectedEvent.description}</p>
+              {selectedEvent.meetingNote ? (
+                <p className="mt-2 text-xs text-text/60">{selectedEvent.meetingNote}</p>
+              ) : null}
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {selectedEvent.tags.map((tag) => (
+                  <span key={tag} className="rounded-full bg-primary-50 px-3 py-1 text-xs text-text/60">
+                    {tag}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-6 rounded-xl border border-primary-100 bg-primary-50 px-4 py-4 text-sm text-text/70">
+                <div className="flex items-center gap-3">
+                  <img
+                    src={selectedEvent.organizer.photo ?? "/images/avatar-placeholder.svg"}
+                    alt={selectedEvent.organizer.name}
+                    className="h-10 w-10 rounded-full object-cover"
+                  />
+                  <div>
+                    <p className="font-semibold text-text">{selectedEvent.organizer.name}</p>
+                    <p className="text-xs text-text/60">{selectedEvent.organizer.role}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <Button onClick={handleRegistration}>
+                  {selectedEvent.registrationRequired ? "Зарегистрироваться" : "Узнать подробнее"}
+                </Button>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => handleAddToCalendar(selectedEvent)}
+                >
+                  <Ticket className="mr-2 h-4 w-4" aria-hidden="true" />
+                  Добавить в календарь
+                </Button>
+                {selectedEvent.link ? (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    onClick={() => window.open(selectedEvent.link, "_blank")}
+                  >
+                    <Link2 className="mr-2 h-4 w-4" aria-hidden="true" />
+                    Открыть ссылку
+                  </Button>
+                ) : null}
+              </div>
+
+              <div className="mt-6 flex flex-wrap items-center gap-2 text-xs text-text/60">
+                <Share2 className="h-4 w-4" aria-hidden="true" />
+                <button
+                  type="button"
+                  onClick={() => handleShare(selectedEvent.link)}
+                  className="rounded-full border border-primary-100 px-3 py-1 hover:bg-primary-50"
+                >
+                  Telegram
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleShare(selectedEvent.link)}
+                  className="rounded-full border border-primary-100 px-3 py-1 hover:bg-primary-50"
+                >
+                  VK
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleShare(selectedEvent.link)}
+                  className="rounded-full border border-primary-100 px-3 py-1 hover:bg-primary-50"
+                >
+                  <Copy className="mr-1 inline h-3 w-3" aria-hidden="true" />
+                  Копировать ссылку
+                </button>
+              </div>
+
+              {selectedEvent.registrationRequired && showRegistration && !selectedEvent.link ? (
+                <div className="mt-6 rounded-2xl border border-primary-100 bg-white p-4">
+                  {registeredState ? (
+                    <div className="text-center text-sm text-text/70">
+                      <p className="text-lg font-semibold text-text">Вы зарегистрированы!</p>
+                      <p className="mt-2">Мы отправим подробности на ваш контакт.</p>
+                      <Button
+                        className="mt-4"
+                        variant="secondary"
+                        onClick={() => handleAddToCalendar(selectedEvent)}
+                      >
+                        Добавить в календарь
+                      </Button>
+                    </div>
+                  ) : (
+                    <form className="space-y-4" onSubmit={handleRegisterSubmit}>
+                      <label className="block text-sm font-medium text-text">
+                        Имя
+                        <input
+                          type="text"
+                          required
+                          className="mt-2 w-full rounded-lg border border-primary-100 px-3 py-2 text-sm"
+                        />
+                      </label>
+                      <label className="block text-sm font-medium text-text">
+                        Контакт
+                        <input
+                          type="text"
+                          required
+                          className="mt-2 w-full rounded-lg border border-primary-100 px-3 py-2 text-sm"
+                        />
+                      </label>
+                      <label className="block text-sm font-medium text-text">
+                        Как узнали
+                        <input
+                          type="text"
+                          className="mt-2 w-full rounded-lg border border-primary-100 px-3 py-2 text-sm"
+                        />
+                      </label>
+                      <Button type="submit">Подтвердить</Button>
+                    </form>
+                  )}
+                </div>
+              ) : null}
+
+              <div className="mt-6">
+                <p className="text-sm font-semibold text-text">Вам также может понравиться</p>
+                <div className="mt-3 grid gap-3 md:grid-cols-2">
+                  {eventsData
+                    .filter((event) => event.direction === selectedEvent.direction && event.id !== selectedEvent.id)
+                    .slice(0, 2)
+                    .map((event) => (
+                      <button
+                        key={event.id}
+                        type="button"
+                        className="rounded-xl border border-primary-100 px-4 py-3 text-left text-sm hover:bg-primary-50"
+                        onClick={() => handleEventOpen(event)}
+                      >
+                        <p className="font-semibold text-text">{event.title}</p>
+                        <p className="text-xs text-text/60">
+                          {formatEventDate(event.date)} · {event.time}
+                        </p>
+                      </button>
+                    ))}
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
+    </section>
+  );
+}
