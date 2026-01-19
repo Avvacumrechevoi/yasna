@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { useSignupModal } from "@/components/forms/SignupModal";
 import { cn } from "@/lib/utils";
 import { cardVariants, staggerChildren } from "@/lib/animation-variants";
-import { directionIconMap } from "@/lib/direction-icons";
+import { directionIconMap, fallbackDirectionIcon } from "@/lib/direction-icons";
 import {
   directionFilters,
   directionsData,
@@ -163,7 +163,7 @@ export function DirectionsSection() {
         >
           <AnimatePresence mode="popLayout">
             {filteredDirections.map((direction) => {
-              const Icon = directionIconMap[direction.icon];
+              const Icon = directionIconMap[direction.icon] ?? fallbackDirectionIcon;
               return (
                 <motion.div
                   key={`${activeFilter}-${direction.id}`}
