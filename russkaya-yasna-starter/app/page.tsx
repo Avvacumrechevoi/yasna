@@ -1,4 +1,4 @@
-import { Footer } from "@/components/layout/footer";
+import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { DirectionsSection } from "@/components/sections/DirectionsSection";
 import { EventsCalendarSection } from "@/components/sections/EventsCalendar";
