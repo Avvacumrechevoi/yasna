@@ -4,84 +4,74 @@ import * as React from "react";
 import { motion, useReducedMotion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import { cardVariants, staggerChildren } from "@/lib/animation-variants";
 
 type Persona = {
   icon: string;
-  headline: string;
-  description: string;
-  tags: string[];
+  title: string;
+  when: string;
+  want: string;
+  soThat: string;
+  recommendation: string;
+  border: string;
+  titleColor: string;
 };
 
 const personas: Persona[] = [
   {
     icon: "🎓",
-    headline: "Чувствуете, что современное образование оторвано от корней",
-    description:
-      "Вы хотите дать детям настоящие знания о родной культуре, но не знаете, где их взять. Школьные учебники не отвечают на ваши вопросы.",
-    tags: ["Теремок тайн", "Ясна-Школа", "ЛитПроСвет"],
-  },
-  {
-    icon: "📚",
-    headline: "Устали от искаженной истории и штампов",
-    description:
-      "Вы чувствуете, что что-то не так в официальной версии истории. Ищете первоисточники и логику, а не мифы и легенды.",
-    tags: ["38 Меридиан", "Извод", "Астроневод"],
-  },
-  {
-    icon: "🎭",
-    headline: "Чувствуете пустоту в праздниках и традициях",
-    description:
-      "Современные праздники стали формальностью. Вы хотите вернуть смысл в семейные события и понять, как праздновали предки.",
-    tags: ["Праздники", "Красота", "ЛитПроСвет"],
+    title: "Родитель в поиске настоящих знаний",
+    when: "Ребёнок задаёт вопросы, на которые учебники не отвечают",
+    want: "Дать ребёнку понимание родной культуры",
+    soThat: "Он вырос с крепкими корнями",
+    recommendation: "\"Ясные маршруты\" — прогулки с детьми",
+    border: "border-primary",
+    titleColor: "text-primary",
   },
   {
     icon: "🔍",
-    headline: "Интересуетесь этимологией и смыслами слов",
-    description:
-      "Вы чувствуете, что многие слова потеряли изначальный смысл. Хотите понимать, как устроен русский язык на глубоком уровне.",
-    tags: ["Извод", "ЛитПроСвет", "Джива"],
+    title: "Ищущий ответы о традициях",
+    when: "Праздники и обряды стали пустой формальностью",
+    want: "Вернуть смысл семейным событиям",
+    soThat: "Традиции снова объединяли семью",
+    recommendation: "\"Праздники / Красота\" — обрядовый круг",
+    border: "border-accent",
+    titleColor: "text-accent",
+  },
+  {
+    icon: "📖",
+    title: "Любитель слов и смыслов",
+    when: "Слова звучат знакомо, но смысл ускользает",
+    want: "Разбираться в корнях и логике языка",
+    soThat: "Читать и понимать глубже",
+    recommendation: "\"Извод\" — этимология и смыслы слов",
+    border: "border-secondary",
+    titleColor: "text-secondary-700",
+  },
+  {
+    icon: "🗺️",
+    title: "Исследователь первоисточников",
+    when: "Официальные версии не объясняют причин",
+    want: "Работать с архивами и картами",
+    soThat: "Видеть систему, а не штампы",
+    recommendation: "\"38 Меридиан\" — архивы и карты",
+    border: "border-primary",
+    titleColor: "text-primary",
   },
   {
     icon: "🤝",
-    headline: "Хотите найти единомышленников",
-    description:
-      "Вы устали быть одиноким в своих интересах. Ищете сообщество думающих людей, с которыми можно исследовать и создавать.",
-    tags: ["Все направления"],
+    title: "В поиске сообщества",
+    when: "Не с кем обсудить открытия и вопросы",
+    want: "Найти единомышленников",
+    soThat: "Исследовать вместе и не оставаться одному",
+    recommendation: "Любое направление — совместные исследования",
+    border: "border-accent",
+    titleColor: "text-accent",
   },
 ];
 
-const tagAnchors: Record<string, string> = {
-  "Теремок тайн": "direction-teremok",
-  "Ясна-Школа": "directions",
-  ЛитПроСвет: "direction-litprosvet",
-  "38 Меридиан": "direction-neglinka",
-  Извод: "direction-izvod",
-  Астроневод: "direction-astronevod",
-  Праздники: "direction-prazdniki",
-  Красота: "direction-prazdniki",
-  Джива: "direction-dzhiva",
-  "Ясные маршруты": "direction-marshruty",
-  "Все направления": "directions",
-};
-
 export function WhoIsThisForSection() {
   const shouldReduceMotion = useReducedMotion();
-
-  const scrollToAnchor = React.useCallback(
-    (anchorId: string) => {
-      const target =
-        document.getElementById(anchorId) || document.getElementById("directions");
-      if (target) {
-        target.scrollIntoView({
-          behavior: shouldReduceMotion ? "auto" : "smooth",
-          block: "start",
-        });
-      }
-    },
-    [shouldReduceMotion]
-  );
 
   return (
     <section className="bg-gradient-to-b from-white via-[#F2F6FF] to-background py-20">
@@ -98,46 +88,50 @@ export function WhoIsThisForSection() {
           whileInView="visible"
           viewport={{ once: true, amount: 0.2 }}
           variants={staggerChildren(shouldReduceMotion)}
-          className="grid gap-6 md:grid-cols-2 xl:grid-cols-3"
+          className="grid gap-6 md:grid-cols-2"
         >
           {personas.map((persona) => (
             <motion.article
-              key={persona.headline}
+              key={persona.title}
               variants={cardVariants(shouldReduceMotion)}
-              className="flex h-full flex-col gap-4 rounded-xl bg-white p-8 shadow-sm transition-transform duration-200 hover:-translate-y-2 hover:shadow-xl active:scale-[0.98]"
+              className={`bg-gradient-to-br from-primary-50 to-white rounded-2xl p-8 border-l-4 ${persona.border} hover:shadow-xl transition-all`}
             >
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-secondary-100 via-secondary-200 to-accent-100 text-3xl">
-                <span aria-hidden="true">{persona.icon}</span>
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-4xl">{persona.icon}</span>
+                <h3 className={`text-2xl font-bold ${persona.titleColor}`}>{persona.title}</h3>
               </div>
 
-              <h3 className="text-xl font-semibold text-text">{persona.headline}</h3>
-              <p className="text-sm text-text/70">{persona.description}</p>
+              <div className="space-y-4 mb-6">
+                <div>
+                  <div className="text-sm font-semibold text-gray-600 mb-1">КОГДА:</div>
+                  <p className="text-gray-800">{persona.when}</p>
+                </div>
 
-              <div className="mt-auto flex flex-wrap gap-2 pt-2">
-                {persona.tags.map((tag) => (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => scrollToAnchor(tagAnchors[tag] ?? "directions")}
-                    className={cn(
-                      "rounded-full bg-accent-50 px-3 py-1 text-xs font-medium text-accent",
-                      "transition-colors hover:bg-accent-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/40"
-                    )}
-                    aria-label={`Перейти к направлению: ${tag}`}
-                  >
-                    {tag}
-                  </button>
-                ))}
+                <div>
+                  <div className="text-sm font-semibold text-gray-600 mb-1">Я ХОЧУ:</div>
+                  <p className="text-gray-800">{persona.want}</p>
+                </div>
+
+                <div>
+                  <div className="text-sm font-semibold text-gray-600 mb-1">ЧТОБЫ:</div>
+                  <p className="text-gray-800">{persona.soThat}</p>
+                </div>
+              </div>
+
+              <div className="bg-white rounded-xl p-4 border border-primary/20">
+                <p className="text-gray-800">
+                  <strong>{persona.recommendation}</strong>
+                </p>
               </div>
             </motion.article>
           ))}
         </motion.div>
 
-        <div className="flex flex-col items-center gap-3 text-center">
-          <Button type="button" onClick={() => scrollToAnchor("directions")}>
+        <div className="flex flex-col items-center gap-2 text-center">
+          <Button type="button" variant="secondary" onClick={() => window.location.assign("#directions")}>
             Выбрать направление
           </Button>
-          <p className="text-sm text-text/70">или узнать больше о каждом</p>
+          <p className="text-sm text-text/60">или узнать больше о каждом</p>
         </div>
       </div>
     </section>

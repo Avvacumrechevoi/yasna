@@ -36,6 +36,13 @@ export function DirectionsSection() {
     return () => query.removeEventListener("change", update);
   }, []);
 
+  const scrollToDirection = React.useCallback((directionId: string) => {
+    const target = document.getElementById(directionId);
+    if (target) {
+      target.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
+
   const filteredDirections = React.useMemo(() => {
     if (activeFilter === "all") return directionsData;
     return directionsData.filter((direction) => direction.filters.includes(activeFilter));
@@ -58,6 +65,73 @@ export function DirectionsSection() {
           <p className="mt-3 text-text/70">
             8 направлений — от изучения языка до космоса. Выберите своё.
           </p>
+        </div>
+
+        <div className="mb-6 bg-gradient-to-r from-primary-50 via-accent-50 to-primary-50 rounded-3xl p-10">
+          <div className="text-center mb-8">
+            <h3 className="text-3xl font-bold text-primary mb-3">
+              🎯 Новичкам рекомендуем начать с:
+            </h3>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-t-4 border-primary">
+              <div className="text-center mb-4">
+                <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-3">
+                  <span className="text-3xl">🚶</span>
+                </div>
+                <h4 className="text-xl font-bold text-primary mb-2">Ясные маршруты</h4>
+              </div>
+              <p className="text-gray-700 text-sm mb-4 text-center">
+                Прогулки по Москве — попробуй метод на практике
+              </p>
+              <button
+                type="button"
+                onClick={() => scrollToDirection("direction-marshruty")}
+                className="px-6 py-3 bg-primary text-white rounded-lg font-semibold w-full"
+              >
+                Выбрать маршрут
+              </button>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-t-4 border-accent">
+              <div className="text-center mb-4">
+                <div className="w-16 h-16 bg-accent rounded-2xl flex items-center justify-center mx-auto mb-3">
+                  <span className="text-3xl">📖</span>
+                </div>
+                <h4 className="text-xl font-bold text-accent mb-2">ЛитПроСвет</h4>
+              </div>
+              <p className="text-gray-700 text-sm mb-4 text-center">
+                Разбор слов — освой базу метода
+              </p>
+              <button
+                type="button"
+                onClick={() => scrollToDirection("direction-litprosvet")}
+                className="px-6 py-3 bg-accent text-white rounded-lg font-semibold w-full"
+              >
+                Присоединиться
+              </button>
+            </div>
+
+            <div className="bg-white rounded-2xl p-6 shadow-lg border-t-4 border-secondary">
+              <div className="text-center mb-4">
+                <div className="w-16 h-16 bg-secondary rounded-2xl flex items-center justify-center mx-auto mb-3">
+                  <span className="text-3xl">🗺️</span>
+                </div>
+                <h4 className="text-xl font-bold text-secondary-700 mb-2">38 Меридиан</h4>
+              </div>
+              <p className="text-gray-700 text-sm mb-4 text-center">
+                Работа с архивами — углубись в историю
+              </p>
+              <button
+                type="button"
+                onClick={() => scrollToDirection("direction-neglinka")}
+                className="px-6 py-3 bg-secondary text-white rounded-lg font-semibold w-full"
+              >
+                Начать изучение
+              </button>
+            </div>
+          </div>
         </div>
 
         <div className="flex items-center justify-center md:hidden">
