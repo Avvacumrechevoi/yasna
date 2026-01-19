@@ -155,9 +155,9 @@ export function DirectionsSection() {
         </AnimatePresence>
 
         <motion.div
-          initial={shouldReduceMotion ? false : "hidden"}
-          whileInView="visible"
-          viewport={{ once: true, amount: 0.2 }}
+          initial={false}
+          whileInView={!shouldReduceMotion ? "visible" : undefined}
+          viewport={!shouldReduceMotion ? { once: true, amount: 0.2 } : undefined}
           variants={staggerChildren(shouldReduceMotion)}
           className="grid gap-8 md:grid-cols-2"
         >
