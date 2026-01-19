@@ -63,6 +63,38 @@ export function FAQSection() {
           <p className="mt-3 text-text/70">Не нашли ответ? Напишите нам</p>
         </div>
 
+        <div className="bg-gradient-to-r from-primary to-accent text-white rounded-2xl p-8 shadow-xl">
+          <h3 className="text-2xl font-bold mb-4 flex items-center gap-3">
+            <span className="text-4xl">💡</span>
+            Как устроена Русская Ясна?
+          </h3>
+          <div className="space-y-4">
+            <p className="text-xl font-bold">
+              Это метод познания мира через русский язык.
+            </p>
+            <ul className="space-y-3 text-lg">
+              <li className="flex items-start gap-3">
+                <span className="text-2xl">✅</span>
+                <span>
+                  <strong>Проверяемо:</strong> Логика, этимология, архивы
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-2xl">✅</span>
+                <span>
+                  <strong>Открыто:</strong> Работаем с первоисточниками
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="text-2xl">✅</span>
+                <span>
+                  <strong>Практично:</strong> Натурные уроки, исследования
+                </span>
+              </li>
+            </ul>
+          </div>
+        </div>
+
         <div className="flex flex-col items-center gap-4 md:flex-row md:justify-between">
           <div className="relative w-full md:max-w-md">
             <Search className="absolute left-3 top-3 h-5 w-5 text-text/40" aria-hidden="true" />

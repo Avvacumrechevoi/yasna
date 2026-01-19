@@ -1,245 +1,209 @@
 "use client";
 
 import * as React from "react";
-import Image from "next/image";
-import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
-import { CalendarDays, Compass, Users } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
+const buildings = [1, 2, 3, 4, 5];
 
-const headline = "Хватит жить по чужим правилам и смыслам";
-const eyebrow = "СООБЩЕСТВО ИССЛЕДОВАТЕЛЕЙ РУССКОЙ КУЛЬТУРЫ";
-
-const description = [
-  "Русская Ясна — это сообщество людей, которые исследуют настоящие смыслы слов, восстанавливают подлинную историю и возвращают традиции в свою жизнь.",
-  "Мы не пересказываем учебники. Мы идем в архивы, анализируем язык и находим логику там, где официальная версия молчит.",
-];
-
-const trustIndicators = [
+const exampleCards = [
   {
-    label: "8 направлений исследований",
-    icon: Compass,
+    emoji: "📖",
+    title: "\"Сутки\" = стык",
+    description: "Со-стыковка дня и ночи",
+    tone: "from-primary-50 to-primary-100",
+    text: "text-gray-900",
   },
   {
-    label: "200+ активных участников",
-    icon: Users,
+    emoji: "🌳",
+    title: "\"Крест\" = ветвь",
+    description: "Ветвь дерева с ответвлениями",
+    tone: "from-accent-50 to-accent-100",
+    text: "text-gray-900",
   },
   {
-    label: "5 лет работы",
-    icon: CalendarDays,
+    emoji: "☁️",
+    title: "\"Район\" = облако",
+    description: "Территория под облаком-куполом",
+    tone: "from-primary to-accent",
+    text: "text-white",
+    isHighlight: true,
   },
 ];
-
-const headlineWords = headline.split(" ");
 
 export function HeroSection() {
-  const shouldReduceMotion = useReducedMotion();
-  const { scrollY } = useScroll();
-  const imageY = useTransform(scrollY, [0, 500], [0, shouldReduceMotion ? 0 : -40]);
-  const assetBase = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
-  const assetPrefix =
-    assetBase && assetBase.startsWith("/") ? assetBase : assetBase ? `/${assetBase}` : "";
-  const heroImageSrc = `${assetPrefix}/images/hero-placeholder.svg`;
-
-  const scrollToSection = React.useCallback(
-    (sectionId: string) => {
-      const element = document.getElementById(sectionId);
-      if (element) {
-        element.scrollIntoView({
-          behavior: shouldReduceMotion ? "auto" : "smooth",
-          block: "start",
-        });
-      }
-    },
-    [shouldReduceMotion]
-  );
-
-  const headlineVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.08,
-      },
-    },
-  };
-
-  const wordVariants = {
-    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 16 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } },
-  };
-
-  const fadeIn = (delay = 0) => ({
-    initial: shouldReduceMotion ? false : { opacity: 0, y: 12 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.6, ease: "easeOut", delay },
-  });
-
-  const buttonAnimation = {
-    initial: shouldReduceMotion ? false : { opacity: 0, scale: 0.94 },
-    animate: { opacity: 1, scale: 1 },
-    transition: { duration: 0.45, ease: "easeOut", delay: 0.4 },
-  };
-
-  const trustVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.08,
-        delayChildren: 0.45,
-      },
-    },
-  };
-
-  const trustItemVariants = {
-    hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 12 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.45, ease: "easeOut" } },
-  };
-
-  const floatingAnimation = shouldReduceMotion
-    ? undefined
-    : {
-        y: [0, -12, 0],
-        transition: { duration: 6, repeat: Infinity, ease: "easeInOut" },
-      };
+  const scrollToSection = React.useCallback((sectionId: string) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, []);
 
   return (
-    <section
-      id="about"
-      className="relative overflow-hidden bg-gradient-to-b from-white via-[#F4F7FD] to-background animate-gradient"
-    >
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-32 top-10 h-72 w-72 rounded-full bg-accent-100/40 blur-3xl" />
-        <div className="absolute right-0 top-24 h-64 w-64 rounded-full bg-secondary-100/60 blur-3xl" />
-        <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(to_right,#2B4570_1px,transparent_1px),linear-gradient(to_bottom,#2B4570_1px,transparent_1px)] [background-size:72px_72px]" />
+    <section className="min-h-screen flex items-center bg-gradient-to-br from-background via-primary-50 to-background relative overflow-hidden" id="about">
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute top-20 left-10 w-64 h-64 bg-primary rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full blur-3xl animate-pulse" />
       </div>
 
-      <div className="relative mx-auto grid max-w-[1280px] gap-12 px-4 py-12 md:px-8 lg:min-h-screen lg:grid-cols-[3fr_2fr] lg:items-center lg:py-20">
-        <div className="flex flex-col gap-6">
-          <motion.p
-            {...fadeIn(0)}
-            className="text-xs font-semibold uppercase tracking-[0.3em] text-secondary-700"
-          >
-            {eyebrow}
-          </motion.p>
-
-          <motion.h1
-            initial={shouldReduceMotion ? false : "hidden"}
-            animate="visible"
-            variants={headlineVariants}
-            aria-label={headline}
-            className="text-[clamp(2.5rem,5vw,4rem)] font-bold text-primary"
-          >
-            <span className="sr-only">{headline}</span>
-            <span aria-hidden="true">
-              {headlineWords.map((word, index) => (
-                <motion.span
-                  key={`${word}-${index}`}
-                  variants={wordVariants}
-                  className="mr-2 inline-block"
-                >
-                  {word}
-                </motion.span>
-              ))}
+      <div className="max-w-7xl mx-auto px-6 py-20 grid lg:grid-cols-2 gap-16 items-center relative z-10">
+        <div className="space-y-8">
+          <div className="inline-block">
+            <span className="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-semibold">
+              Познание через родной язык
             </span>
-          </motion.h1>
-
-          <motion.p
-            {...fadeIn(0.2)}
-            className="text-lg text-text/70 md:text-xl"
-          >
-            Верните себе понимание родной культуры через язык
-          </motion.p>
-
-          <motion.div {...fadeIn(0.3)} className="space-y-4 text-base text-text/70">
-            {description.map((paragraph) => (
-              <p key={paragraph}>{paragraph}</p>
-            ))}
-          </motion.div>
-
-          <motion.div
-            {...buttonAnimation}
-            className="flex flex-col gap-4 sm:flex-row"
-          >
-            <Button type="button" onClick={() => scrollToSection("directions")}>
-              Выбрать направление
-            </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => scrollToSection("how-it-works")}
-            >
-              Как это работает
-            </Button>
-          </motion.div>
-
-          <motion.ul
-            initial={shouldReduceMotion ? false : "hidden"}
-            animate="visible"
-            variants={trustVariants}
-            className="grid gap-3 pt-2 text-sm text-text/70 sm:grid-cols-3"
-          >
-            {trustIndicators.map((item) => {
-              const Icon = item.icon;
-              return (
-                <motion.li
-                  key={item.label}
-                  variants={trustItemVariants}
-                  className="flex items-center gap-2"
-                >
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-secondary-100 text-secondary-700">
-                    <Icon className="h-4 w-4" aria-hidden="true" />
-                  </span>
-                  <span>{item.label}</span>
-                </motion.li>
-              );
-            })}
-          </motion.ul>
-        </div>
-
-        <motion.div
-          initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
-          style={{ y: imageY }}
-          className="relative mx-auto w-full max-w-md lg:max-w-none"
-        >
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[32px] border border-primary-100 bg-white/80 shadow-xl">
-            <Image
-              src={heroImageSrc}
-              alt="Абстрактная иллюстрация книг и старинных карт"
-              fill
-              sizes="(max-width: 768px) 80vw, (max-width: 1200px) 45vw, 520px"
-              className="object-cover"
-              priority
-            />
-            <div
-              className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(43,69,112,0.12),_transparent_55%)]"
-              aria-hidden="true"
-            />
           </div>
 
-          <motion.div
-            animate={floatingAnimation}
-            className="absolute -left-6 top-14 hidden h-16 w-16 rounded-full border border-secondary-200 bg-secondary-50/80 shadow-md md:block"
-            aria-hidden="true"
-          />
-          <motion.div
-            animate={floatingAnimation}
-            className="absolute -bottom-6 right-10 hidden h-20 w-20 rounded-full border border-accent-200 bg-accent-50/80 shadow-md md:block"
-            aria-hidden="true"
-          />
-          <motion.div
-            animate={floatingAnimation}
-            className={cn(
-              "absolute right-6 top-10 hidden rounded-full bg-white/90 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-primary shadow-lg md:block",
-              shouldReduceMotion ? "" : "backdrop-blur"
-            )}
-            aria-hidden="true"
-          >
-            Архивы · Язык · Практики
-          </motion.div>
-        </motion.div>
+          <h1 className="text-5xl lg:text-6xl xl:text-7xl font-serif font-bold text-primary leading-tight">
+            Ответы о мире<br />
+            записаны в словах
+          </h1>
+
+          <div className="space-y-4">
+            <p className="text-2xl lg:text-3xl text-gray-700 font-light leading-relaxed">
+              Почему территория — "район"?<br />
+              Почему день и ночь — "сутки"?
+            </p>
+            <p className="text-xl text-gray-600">
+              Русский язык отвечает сам.<br />
+              Разбираем слово — получаем ответ.
+            </p>
+          </div>
+
+          <div className="bg-gradient-to-r from-primary/10 to-accent/10 border-l-4 border-primary p-6 rounded-r-xl">
+            <p className="text-lg text-gray-800 leading-relaxed">
+              <strong>Каждое русское слово объясняет само себя.</strong>
+              <br />
+              Нужно только знать КАК его разобрать.
+            </p>
+          </div>
+
+          <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-300 group">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-gray-600 flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                Интерактивный пример
+              </p>
+            </div>
+
+            <div className="mb-6 relative h-32 bg-gradient-to-b from-blue-100 to-green-50 rounded-xl overflow-hidden">
+              <div className="absolute top-4 left-1/2 transform -translate-x-1/2 group-hover:scale-110 transition-transform duration-500">
+                <svg width="120" height="60" viewBox="0 0 120 60">
+                  <ellipse cx="35" cy="35" rx="25" ry="20" fill="#E0E7FF" opacity="0.9" />
+                  <ellipse cx="60" cy="30" rx="30" ry="25" fill="#DDD6FE" opacity="0.9" />
+                  <ellipse cx="85" cy="35" rx="25" ry="20" fill="#E0E7FF" opacity="0.9" />
+                </svg>
+              </div>
+
+              <div className="absolute bottom-0 left-0 right-0 h-16 bg-green-200 flex items-center justify-center">
+                <div className="flex gap-2">
+                  {buildings.map((item) => (
+                    <div key={item} className="w-4 h-6 bg-gray-600 rounded-t" />
+                  ))}
+                </div>
+              </div>
+
+              <div className="absolute top-2 left-2 bg-white/90 px-2 py-1 rounded text-xs font-semibold">
+                ☁️ Облако
+              </div>
+              <div className="absolute bottom-2 left-2 bg-white/90 px-2 py-1 rounded text-xs font-semibold">
+                🏘️ Территория
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <span className="text-2xl">☁️</span>
+                "Район" = территория под одним облаком
+              </p>
+
+              <p className="text-gray-700">
+                Раньше территорию называли по <strong>облаку</strong>, которое её накрывает как
+                купол.
+              </p>
+
+              <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg p-4 border border-blue-200">
+                <p className="text-sm font-semibold text-gray-800 mb-2">🔗 Видишь связь?</p>
+                <div className="space-y-1 text-sm text-gray-700">
+                  <p>• <strong>Rain</strong> (англ. дождь) = вода из облака-района</p>
+                  <p>• <strong>Область</strong> = облачность (много облаков)</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 pt-4 border-t border-gray-200">
+              <p className="text-accent font-bold text-center text-lg">
+                ✨ Слово само объяснило себя!
+              </p>
+            </div>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 pt-4">
+            <button
+              type="button"
+              onClick={() => scrollToSection("method")}
+              className="px-8 py-4 bg-primary text-white rounded-xl font-semibold hover:bg-primary-600 transition-all shadow-lg"
+            >
+              Узнать метод
+            </button>
+            <button
+              type="button"
+              onClick={() => scrollToSection("directions")}
+              className="px-8 py-4 border-2 border-primary text-primary rounded-xl font-semibold hover:bg-primary-50 transition-all"
+            >
+              Смотреть примеры
+            </button>
+          </div>
+
+          <div className="flex gap-8 pt-6 text-sm">
+            <div className="text-center">
+              <div className="font-bold text-3xl text-primary mb-1">8</div>
+              <div className="text-gray-600">направлений</div>
+            </div>
+            <div className="text-center">
+              <div className="font-bold text-3xl text-primary mb-1">200+</div>
+              <div className="text-gray-600">участников</div>
+            </div>
+            <div className="text-center">
+              <div className="font-bold text-3xl text-primary mb-1">5</div>
+              <div className="text-gray-600">лет практики</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative lg:pl-8">
+          <div className="bg-white rounded-3xl p-8 shadow-2xl border border-gray-100">
+            <h3 className="text-2xl font-bold text-primary mb-6 text-center">
+              Это работает для любого слова
+            </h3>
+
+            <div className="space-y-4 mb-8">
+              {exampleCards.map((card) => (
+                <div
+                  key={card.title}
+                  className={`p-5 bg-gradient-to-r ${card.tone} rounded-xl hover:shadow-md transition-all cursor-pointer ${card.isHighlight ? "text-white shadow-lg hover:shadow-xl" : ""}`}
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="text-2xl">{card.emoji}</div>
+                    <div>
+                      <div className={`font-bold mb-1 text-lg ${card.text}`}>{card.title}</div>
+                      <div className={`text-sm ${card.isHighlight ? "text-white/90" : "text-gray-700"}`}>
+                        {card.description}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="bg-gradient-to-r from-accent-50 to-primary-50 rounded-xl p-6">
+              <p className="text-center font-semibold text-gray-800 text-lg">
+                Таких слов в русском языке — тысячи
+              </p>
+              <p className="text-center text-sm text-gray-600 mt-2">
+                Каждое слово — ключ к пониманию мира
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

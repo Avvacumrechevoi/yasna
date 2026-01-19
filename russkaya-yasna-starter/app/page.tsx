@@ -4,9 +4,12 @@ import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
 import { DirectionsSection } from "@/components/sections/DirectionsSection";
 import { FAQSection } from "@/components/sections/FAQ";
+import { FinalCTASection } from "@/components/sections/FinalCTA";
 import { HeroSection } from "@/components/sections/Hero";
 import { HowToParticipateSection } from "@/components/sections/HowToParticipate";
 import { JoinSection } from "@/components/sections/join";
+import { MethodSection } from "@/components/sections/MethodSection";
+import { WhyWordsSection } from "@/components/sections/WhyWords";
 import { WhoIsThisForSection } from "@/components/sections/WhoIsThisFor";
 
 const TestimonialsSection = dynamic(
@@ -27,13 +30,16 @@ export default function Home() {
       <Header />
       <main>
         <HeroSection />
+        <WhyWordsSection />
         <WhoIsThisForSection />
         <DirectionsSection />
+        <MethodSection />
         <HowToParticipateSection />
         <TestimonialsSection />
         <FAQSection />
         <EventsCalendarSection />
         <JoinSection />
+        <FinalCTASection />
       </main>
       <Footer />
     </div>
