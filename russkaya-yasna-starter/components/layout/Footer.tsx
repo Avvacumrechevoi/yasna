@@ -61,18 +61,16 @@ const directions = [
 ];
 
 const participationLinks = [
-  { href: "#how-it-works", label: "Как участвовать" },
+  { href: "#directions", label: "Направления" },
   { href: "#events", label: "Мероприятия" },
-  { href: "#school", label: "Ясна-Школа" },
-  { href: "#join", label: "Вступить" },
+  { href: "/about-method", label: "О методе" },
   { href: "#faq", label: "Часто задаваемые вопросы" },
   { href: "mailto:info@russkaya-yasna.ru", label: "Контакты" },
 ];
 
 const resourceLinks = [
-  { href: "#about", label: "О проекте" },
-  { href: "#history", label: "История Ясны" },
-  { href: "#team", label: "Команда" },
+  { href: "#about-project", label: "О проекте" },
+  { href: "/about-method", label: "Метод Русская Ясна" },
   { href: "#publications", label: "Публикации" },
   { href: "#videos", label: "Видеобиблиотека" },
   { href: "#support", label: "Поддержать проект" },
