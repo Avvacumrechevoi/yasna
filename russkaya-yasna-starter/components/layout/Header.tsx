@@ -25,6 +25,7 @@ type NavItem = {
   id: string;
   label: string;
   href: string;
+  type: "anchor" | "route";
 };
 
 type DirectionItem = {
@@ -36,10 +37,10 @@ type DirectionItem = {
 };
 
 const navItems: NavItem[] = [
-  { id: "about", label: "О проекте", href: "#about" },
-  { id: "directions", label: "Направления", href: "#directions" },
-  { id: "how-it-works", label: "Как участвовать", href: "#how-it-works" },
-  { id: "events", label: "Мероприятия", href: "#events" },
+  { id: "about-project", label: "О проекте", href: "#about-project", type: "anchor" },
+  { id: "directions", label: "Направления", href: "#directions", type: "anchor" },
+  { id: "about-method", label: "О методе", href: "/about-method", type: "route" },
+  { id: "events", label: "Мероприятия", href: "#events", type: "anchor" },
 ];
 
 const directionItems: DirectionItem[] = [
@@ -117,7 +118,7 @@ const navItemVariants = {
 
 export function Header() {
   const [isScrolled, setIsScrolled] = React.useState(false);
-  const [activeSection, setActiveSection] = React.useState("about");
+  const [activeSection, setActiveSection] = React.useState("about-project");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
   const [isDirectionsOpen, setIsDirectionsOpen] = React.useState(false);
   const [isDesktop, setIsDesktop] = React.useState(false);
@@ -222,7 +223,7 @@ export function Header() {
   }, [isMobileMenuOpen]);
 
   React.useEffect(() => {
-    const sectionIds = navItems.map((item) => item.id);
+    const sectionIds = navItems.filter((item) => item.type === "anchor").map((item) => item.id);
     const sections = sectionIds
       .map((id) => document.getElementById(id))
       .filter((section): section is HTMLElement => Boolean(section));
@@ -392,6 +393,22 @@ export function Header() {
                         ) : null}
                       </AnimatePresence>
                     </div>
+                  </motion.li>
+                );
+              }
+
+              if (item.type === "route") {
+                return (
+                  <motion.li key={item.id} variants={navItemVariants}>
+                    <Link
+                      href={item.href}
+                      className={cn(
+                        "rounded-full px-3 py-2 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                        "text-text/80 hover:text-primary"
+                      )}
+                    >
+                      {item.label}
+                    </Link>
                   </motion.li>
                 );
               }
@@ -585,6 +602,26 @@ export function Header() {
                             </motion.div>
                           ) : null}
                         </AnimatePresence>
+                      </motion.li>
+                    );
+                  }
+
+                  if (item.type === "route") {
+                    return (
+                      <motion.li key={item.id} variants={navItemVariants}>
+                        <Link
+                          href={item.href}
+                          onClick={() => {
+                            setIsMobileMenuOpen(false);
+                            setIsDirectionsOpen(false);
+                          }}
+                          className={cn(
+                            "flex min-h-[44px] items-center rounded-xl px-4 py-3 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/40",
+                            "text-text/80 hover:bg-primary-50"
+                          )}
+                        >
+                          {item.label}
+                        </Link>
                       </motion.li>
                     );
                   }
