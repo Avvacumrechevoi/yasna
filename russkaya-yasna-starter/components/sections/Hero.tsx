@@ -30,7 +30,7 @@ export function HeroSection() {
             className="mx-auto max-w-3xl mb-12 text-xl md:text-2xl lg:text-3xl text-slate-700 font-light leading-relaxed animate-fade-in-up"
             style={{ animationDelay: "100ms" }}
           >
-            Древнее учение о мире,
+            Учение о мире,
             <br className="hidden sm:block" />
             записанное в русском языке
           </p>
