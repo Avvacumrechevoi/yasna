@@ -2,7 +2,6 @@ import dynamic from "next/dynamic";
 
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
-import { AboutProjectSection } from "@/components/sections/AboutProject";
 import { DirectionsSection } from "@/components/sections/DirectionsSection";
 import { FAQSection } from "@/components/sections/FAQ";
 import { FinalCTASection } from "@/components/sections/FinalCTA";
@@ -27,7 +26,6 @@ export default function Home() {
       <Header />
       <main>
         <HeroSection />
-        <AboutProjectSection />
         <WhoIsThisForSection />
         <DirectionsSection />
         <EventsCalendarSection />
