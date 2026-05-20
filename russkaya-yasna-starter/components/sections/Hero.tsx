@@ -21,7 +21,7 @@ export function HeroSection() {
       <div className="w-full max-w-[1920px] mx-auto">
         <div className="relative max-w-6xl mx-auto px-6 py-32 text-center">
           <h1 className="mb-8 animate-fade-in-up">
-            <span className="block text-7xl md:text-8xl lg:text-9xl font-bold bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent tracking-tight leading-none mb-4">
+            <span className="block text-7xl md:text-8xl lg:text-9xl font-bold bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900 bg-clip-text text-transparent tracking-normal leading-[1.15] pb-4 px-2 mb-4">
               Русская Ясна
             </span>
           </h1>

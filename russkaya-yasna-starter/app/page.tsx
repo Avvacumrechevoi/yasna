@@ -26,10 +26,10 @@ export default function Home() {
       <Header />
       <main>
         <HeroSection />
-        <WhoIsThisForSection />
         <DirectionsSection />
         <EventsCalendarSection />
         <TestimonialsSection />
+        <WhoIsThisForSection />
         <FAQSection />
         <FinalCTASection />
       </main>
